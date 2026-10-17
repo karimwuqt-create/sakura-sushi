@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сакура — суши-кафе</title>
+<meta name="description" content="Суши-кафе «Сакура»: хосомаки, футомаки, уромаки, тамаки — 550 ₽ за сет. Готовим за 5–10 минут. Пушкина 13, дом 3.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Nunito:wght@400;600;800;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pink-50:#fff4f8; --pink-100:#ffe3ee; --pink-200:#ffc6dc; --pink-300:#ff9fc3;
+  --pink-400:#ff76a8; --pink-500:#f0508c; --pink-700:#b8285f;
+  --ink:#4a1f33; --ink-soft:#7b4a60; --wood:#5b3426; --white:#fff;
+  --shadow:0 12px 30px rgba(184,40,95,.18);
+  --radius:26px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Nunito",system-ui,sans-serif; color:var(--ink);
+  background:
+    radial-gradient(1200px 700px at 85% -10%, #fff 0%, transparent 60%),
+    linear-gradient(180deg,#ffd1e3 0%,#ffe6f0 35%,#fff0f6 70%,#ffe1ee 100%);
+  background-color:var(--pink-100);
+  min-height:100vh; overflow-x:hidden;
+}
+a{color:inherit}
+h1,h2,h3{font-family:"Comfortaa",sans-serif;line-height:1.15}
+.jp{font-family:"Yuji Syuku",serif}
+
+/* ---------- petals canvas + tree ---------- */
+#petals{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:40}
+#tree{
+  position:fixed;left:0;top:0;width:min(560px,62vw);z-index:30;
+  transform-origin:0 25%; cursor:pointer; filter:drop-shadow(0 10px 18px rgba(184,40,95,.25));
+  animation:sway 7s ease-in-out infinite;
+}
+#tree.shake{animation:shake .9s ease-in-out}
+@keyframes sway{0%,100%{transform:rotate(0deg)}50%{transform:rotate(1.2deg)}}
+@keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(3deg)}40%{transform:rotate(-2.5deg)}60%{transform:rotate(2deg)}80%{transform:rotate(-1deg)}}
+.tree-hint{
+  position:fixed;left:18px;top:clamp(170px,30vw,330px);z-index:31;
+  background:var(--white);padding:6px 12px;border-radius:999px;font-size:13px;font-weight:800;
+  color:var(--pink-700);box-shadow:var(--shadow);animation:bob 2.4s ease-in-out infinite;
+  transition:opacity .4s;
+}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* ---------- nav ---------- */
+nav{
+  position:fixed;top:14px;right:16px;z-index:50;display:flex;gap:6px;align-items:center;
+  background:rgba(255,255,255,.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  padding:6px;border-radius:999px;box-shadow:var(--shadow);
+}
+nav a{text-decoration:none;font-weight:800;font-size:15px;padding:9px 14px;border-radius:999px;transition:.2s}
+nav a:hover{background:var(--pink-100)}
+nav .call{background:var(--pink-500);color:#fff}
+nav .call:hover{background:var(--pink-700)}
+
+/* ---------- layout ---------- */
+section{position:relative;padding:90px 20px}
+.wrap{max-width:1100px;margin:0 auto;position:relative;z-index:2}
+.title{font-size:clamp(32px,5vw,50px);text-align:center;margin-bottom:10px}
+.title .jp{display:block;font-size:.55em;color:var(--pink-500);letter-spacing:.3em;margin-bottom:6px}
+.sub{text-align:center;color:var(--ink-soft);font-size:18px;max-width:620px;margin:0 auto 46px}
+
+/* ---------- hero ---------- */
+.hero{min-height:100vh;display:flex;align-items:center;padding-top:clamp(150px,22vw,280px);overflow:hidden}
+.sun{
+  position:absolute;right:8%;top:16%;width:min(420px,60vw);aspect-ratio:1;border-radius:50%;
+  background:linear-gradient(180deg,#ff8fb8 0%,#ffb3cf 55%,#ffd9e7 100%);
+  -webkit-mask:repeating-linear-gradient(180deg,#000 0 22px,transparent 22px 28px);
+          mask:repeating-linear-gradient(180deg,#000 0 22px,transparent 22px 28px);
+  opacity:.75;animation:sunrise 2s ease-out both;
+}
+@keyframes sunrise{from{transform:translateY(80px);opacity:0}}
+.fuji{position:absolute;left:0;right:0;bottom:0;width:100%;height:auto;z-index:1}
+.cloud{position:absolute;z-index:1;opacity:.95;animation:drift 38s linear infinite}
+@keyframes drift{from{transform:translateX(-30vw)}to{transform:translateX(120vw)}}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center}
+.hero h1{font-size:clamp(56px,10vw,120px);color:var(--pink-500);
+  text-shadow:4px 4px 0 #fff, 8px 8px 0 var(--pink-200)}
+.hero .kanji{font-size:clamp(30px,5vw,54px);color:var(--ink);letter-spacing:.2em;display:block;margin-bottom:-6px}
+.hero p.lead{font-size:clamp(18px,2.2vw,22px);margin:18px 0 28px;max-width:520px;color:var(--ink-soft);font-weight:600}
+.badges{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:30px}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;padding:9px 14px;border-radius:999px;font-weight:800;box-shadow:var(--shadow);font-size:15px}
+.badge svg{width:22px;height:22px}
+.btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;text-decoration:none;
+  font:900 17px "Nunito",sans-serif;padding:15px 26px;border-radius:999px;transition:transform .2s, box-shadow .2s;
+}
+.btn:active{transform:scale(.96)}
+.btn-main{background:var(--pink-500);color:#fff;box-shadow:0 6px 0 var(--pink-700),var(--shadow)}
+.btn-main:hover{transform:translateY(-3px)}
+.btn-ghost{background:#fff;color:var(--pink-700);box-shadow:0 6px 0 var(--pink-200),var(--shadow)}
+.btn-ghost:hover{transform:translateY(-3px)}
+.chibi-box{position:relative;display:flex;justify-content:center}
+.chibi{width:min(360px,80vw);animation:float 4s ease-in-out infinite;filter:drop-shadow(0 18px 20px rgba(184,40,95,.25))}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.bubble{
+  position:absolute;top:-60px;right:0;z-index:2;background:#fff;padding:12px 16px;border-radius:20px;font-weight:900;
+  box-shadow:var(--shadow);font-size:16px;max-width:200px;animation:pop 3s ease-in-out infinite;
+}
+.bubble::after{content:"";position:absolute;left:24px;bottom:-12px;border:12px solid transparent;border-top-color:#fff;border-bottom:0}
+@keyframes pop{0%,100%{transform:scale(1) rotate(-2deg)}50%{transform:scale(1.06) rotate(2deg)}}
+.wave-arm{transform-origin:228px 238px;animation:wave 1.6s ease-in-out infinite}
+@keyframes wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-14deg)}}
+.blink{transform-origin:150px 150px;animation:blink 4.5s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+
+/* ---------- promo ---------- */
+.promo{padding:30px 20px}
+.promo-card{
+  max-width:1000px;margin:0 auto;border-radius:34px;padding:34px clamp(20px,4vw,48px);position:relative;overflow:hidden;
+  background:linear-gradient(120deg,var(--pink-500),#ff7fb0 60%,#ffa7c8);color:#fff;
+  display:grid;grid-template-columns:auto 1fr auto;gap:28px;align-items:center;box-shadow:0 20px 40px rgba(240,80,140,.35);
+}
+.promo-card::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.25) 0 2px,transparent 3px) 0 0/34px 34px;}
+.promo .pct{font:900 clamp(60px,9vw,100px)/1 "Nunito";text-shadow:4px 4px 0 var(--pink-700);position:relative;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.promo h3{font-size:clamp(22px,3vw,30px);margin-bottom:6px;position:relative}
+.promo p{font-size:17px;opacity:.95;position:relative}
+.promo .gift{width:96px;position:relative;animation:wiggle 2.6s ease-in-out infinite}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+
+/* ---------- menu ---------- */
+.menu-head{display:flex;align-items:center;justify-content:center;gap:16px}
+.mascot{width:86px;animation:hop 1.4s ease-in-out infinite}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1,1)}40%{transform:translateY(-18px) scale(.95,1.05)}80%{transform:translateY(0) scale(1.08,.92)}}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.card{
+  background:#fff;border-radius:var(--radius);padding:24px 20px 22px;text-align:center;position:relative;
+  box-shadow:var(--shadow);transition:transform .35s cubic-bezier(.2,1.4,.4,1), box-shadow .3s;
+  border:3px solid transparent;
+}
+.card:hover{transform:translateY(-10px) rotate(-1deg);border-color:var(--pink-200)}
+.card .icon{width:120px;height:120px;margin:0 auto 10px;transition:transform .6s}
+.card:hover .icon{transform:rotate(360deg) scale(1.08)}
+.card .jp{color:var(--pink-500);font-size:20px}
+.card h3{font-size:24px;margin:2px 0 8px}
+.card p{color:var(--ink-soft);font-size:15px;min-height:66px}
+.price{font:900 30px "Nunito";color:var(--pink-500);margin:12px 0 2px}
+.price small{font-size:14px;color:var(--ink-soft);font-weight:700}
+.first{font-size:13px;font-weight:800;color:var(--pink-700);background:var(--pink-100);display:inline-block;padding:3px 10px;border-radius:999px;margin-bottom:14px}
+.add{width:100%;justify-content:center;font-size:16px;padding:12px}
+.add.done{background:#59b36b;box-shadow:0 6px 0 #3d8a4e}
+
+/* ---------- features ---------- */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.feat{background:rgba(255,255,255,.8);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);text-align:center}
+.feat svg{width:84px;height:84px;margin-bottom:12px}
+.feat h3{font-size:22px;margin-bottom:6px}
+.feat p{color:var(--ink-soft)}
+.timer-ring circle.prog{stroke-dasharray:226;stroke-dashoffset:226;animation:ring 4s ease-in-out infinite}
+@keyframes ring{0%{stroke-dashoffset:226}70%,100%{stroke-dashoffset:0}}
+.clock-hand{transform-origin:40px 40px;animation:spin 4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- omikuji ---------- */
+.omi{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center;background:#fff;border-radius:34px;padding:36px;box-shadow:var(--shadow);max-width:900px;margin:0 auto}
+.omi-box{width:150px;cursor:pointer;transition:transform .2s}
+.omi-box.shake{animation:boxshake .7s ease-in-out}
+@keyframes boxshake{0%,100%{transform:rotate(0)}20%{transform:rotate(-18deg)}40%{transform:rotate(16deg)}60%{transform:rotate(-12deg)}80%{transform:rotate(8deg)}}
+.scroll{
+  background:linear-gradient(90deg,#fff8ee,#fffdf8 50%,#fff8ee);border:2px dashed var(--pink-300);border-radius:18px;
+  padding:22px;min-height:120px;transform-origin:top;transition:transform .5s cubic-bezier(.2,1.5,.4,1),opacity .3s;
+}
+.scroll.hide{transform:scaleY(0);opacity:0}
+.scroll .rank{font:400 38px "Yuji Syuku";color:var(--pink-500)}
+.scroll .rank span{font:900 18px "Nunito";color:var(--ink);margin-left:10px}
+.scroll p{font-size:18px;margin-top:6px}
+
+/* ---------- contacts ---------- */
+.contacts{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.contact{display:flex;gap:18px;align-items:center;background:#fff;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);text-decoration:none;transition:transform .25s}
+a.contact:hover{transform:translateY(-5px)}
+.contact svg{width:64px;height:64px;flex:none}
+.contact b{display:block;font-size:14px;color:var(--ink-soft);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.contact span{font:900 clamp(20px,2.6vw,26px) "Nunito"}
+.map{grid-column:1/-1;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);background:#fff}
+.map svg{display:block;width:100%;height:auto}
+
+footer{text-align:center;padding:50px 20px 110px;color:var(--ink-soft);font-weight:700}
+footer .jp{font-size:44px;color:var(--pink-400);display:block}
+
+/* ---------- cart ---------- */
+.cart-btn{
+  position:fixed;right:18px;bottom:18px;z-index:60;width:68px;height:68px;border-radius:50%;border:0;cursor:pointer;
+  background:var(--pink-500);box-shadow:0 6px 0 var(--pink-700),var(--shadow);display:grid;place-items:center;transition:transform .2s;
+}
+.cart-btn:hover{transform:scale(1.08)}
+.cart-btn.bump{animation:bump .4s}
+@keyframes bump{50%{transform:scale(1.25)}}
+.cart-btn svg{width:36px;height:36px}
+.cart-count{position:absolute;top:-4px;right:-4px;background:#fff;color:var(--pink-700);font-weight:900;border-radius:999px;min-width:26px;height:26px;display:grid;place-items:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.panel{
+  position:fixed;right:18px;bottom:100px;z-index:60;width:min(360px,calc(100vw - 36px));background:#fff;border-radius:26px;
+  box-shadow:0 20px 50px rgba(74,31,51,.3);padding:22px;transform-origin:bottom right;transition:transform .35s cubic-bezier(.2,1.4,.4,1),opacity .25s;
+}
+.panel.hide{transform:scale(.6);opacity:0;pointer-events:none}
+.panel h3{font-size:22px;margin-bottom:12px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed var(--pink-200)}
+.qty{display:flex;align-items:center;gap:8px}
+.qty button{width:30px;height:30px;border-radius:50%;border:0;background:var(--pink-100);color:var(--pink-700);font:900 18px "Nunito";cursor:pointer}
+.empty{color:var(--ink-soft);padding:10px 0}
+.check{display:flex;gap:10px;align-items:center;margin:14px 0 8px;font-weight:800;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--pink-500)}
+.total{display:flex;justify-content:space-between;font:900 22px "Nunito";margin:8px 0 16px}
+.total s{color:var(--ink-soft);font-size:16px;margin-right:8px}
+.panel .btn{width:100%;justify-content:center}
+.panel .note{font-size:13px;color:var(--ink-soft);text-align:center;margin-top:10px}
+
+/* ---------- reveal ---------- */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s, transform .8s cubic-bezier(.2,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.cards .reveal:nth-child(2){transition-delay:.1s}.cards .reveal:nth-child(3){transition-delay:.2s}.cards .reveal:nth-child(4){transition-delay:.3s}
+
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr;text-align:center}
+  .hero p.lead{margin-left:auto;margin-right:auto}
+  .badges,.btns{justify-content:center}
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .features{grid-template-columns:1fr}
+  .promo-card{grid-template-columns:1fr;text-align:center;justify-items:center}
+  .omi{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .contacts{grid-template-columns:1fr}
+  nav a.hide-sm{display:none}
+}
+@media (max-width:520px){
+  .cards{grid-template-columns:1fr}
+  section{padding:70px 16px}
+  nav{right:10px;top:10px}
+  nav a{padding:8px 11px;font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- Сакура в левом верхнем углу (цветы дорисовывает JS) -->
+<svg id="tree" viewBox="0 0 500 420" aria-label="Дерево сакуры — нажми, чтобы потрясти">
+  <defs>
+    <symbol id="fl" viewBox="-10 -10 20 20">
+      <g>
+        <path d="M0-9C3-9 4-5 0-1C-4-5-3-9 0-9Z" transform="rotate(0)"/>
+        <path d="M0-9C3-9 4-5 0-1C-4-5-3-9 0-9Z" transform="rotate(72)"/>
+        <path d="M0-9C3-9 4-5 0-1C-4-5-3-9 0-9Z" transform="rotate(144)"/>
+        <path d="M0-9C3-9 4-5 0-1C-4-5-3-9 0-9Z" transform="rotate(216)"/>
+        <path d="M0-9C3-9 4-5 0-1C-4-5-3-9 0-9Z" transform="rotate(288)"/>
+      </g>
+      <circle r="1.8" fill="#e23d78"/>
+    </symbol>
+    <radialGradient id="blob" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ffb3cf"/><stop offset="1" stop-color="#ffb3cf" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g id="blobs"></g>
+  <g fill="none" stroke="#5b3426" stroke-linecap="round">
+    <path d="M-30 120 C 60 110, 120 80, 200 70" stroke-width="34"/>
+    <path d="M120 92 C 170 120, 230 150, 300 150" stroke-width="18"/>
+    <path d="M200 70 C 260 55, 330 40, 400 50" stroke-width="14"/>
+    <path d="M300 150 C 340 160, 380 190, 420 200" stroke-width="9"/>
+    <path d="M60 112 C 80 160, 110 200, 150 230" stroke-width="12"/>
+    <path d="M250 60 C 270 30, 300 15, 330 5" stroke-width="9"/>
+    <path d="M150 225 C 170 250, 200 260, 230 262" stroke-width="6"/>
+    <path d="M350 45 C 380 70, 420 80, 460 85" stroke-width="6"/>
+    <path d="M240 140 C 250 170, 270 185, 290 195" stroke-width="5"/>
+  </g>
+  <g fill="none" stroke="#7a4a36" stroke-linecap="round" stroke-width="3" opacity=".6">
+    <path d="M-20 108 C 60 98, 120 70, 196 62"/>
+  </g>
+  <g id="flowers"></g>
+</svg>
+<div class="tree-hint" id="treeHint">🌸 потряси меня!</div>
+<canvas id="petals"></canvas>
+
+<nav>
+  <a href="#menu">Меню</a>
+  <a href="#omikuji" class="hide-sm">Омикудзи</a>
+  <a href="#contacts" class="hide-sm">Контакты</a>
+  <a href="tel:+7998174820" class="call">📞 Заказать</a>
+</nav>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="sun"></div>
+  <svg class="cloud" style="top:22%;width:220px;animation-delay:-8s" viewBox="0 0 220 80"><path fill="#fff" d="M20 70h180a20 20 0 0 0 0-40 30 30 0 0 0-50-14A40 40 0 0 0 80 20a26 26 0 0 0-40 14A18 18 0 0 0 20 70Z"/></svg>
+  <svg class="cloud" style="top:48%;width:150px;animation-duration:52s;animation-delay:-30s;opacity:.8" viewBox="0 0 220 80"><path fill="#fff" d="M20 70h180a20 20 0 0 0 0-40 30 30 0 0 0-50-14A40 40 0 0 0 80 20a26 26 0 0 0-40 14A18 18 0 0 0 20 70Z"/></svg>
+  <svg class="fuji" viewBox="0 0 1440 260" preserveAspectRatio="none" aria-hidden="true">
+    <path fill="#f7a8c8" d="M0 260V200C200 190 380 150 520 90 600 55 640 30 700 28 760 30 800 55 880 95 1020 160 1240 190 1440 200V260Z"/>
+    <path fill="#fff" d="M640 50C665 34 685 28 700 28 715 28 735 34 760 50L742 70 724 58 706 74 688 60 670 72Z"/>
+    <path fill="#ffc6dc" d="M0 260V230C300 215 500 200 720 205 960 210 1200 222 1440 228V260Z"/>
+  </svg>
+
+  <div class="wrap hero-grid">
+    <div class="reveal">
+      <span class="kanji jp">桜 寿司</span>
+      <h1>Сакура</h1>
+      <p class="lead">Уютное суши-кафе в аниме-стиле. Свежие роллы, которые мы готовим всего за 5–10 минут — прямо при вас.</p>
+      <div class="badges">
+        <div class="badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffe3ee" stroke="#f0508c" stroke-width="2"/><path d="M12 6v6l4 2" stroke="#b8285f" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>5–10 минут</div>
+        <div class="badge"><svg viewBox="0 0 24 24"><path d="M3 8h18v4H3z" fill="#f0508c"/><path d="M5 12h14v9H5z" fill="#ff9fc3"/><path d="M12 8v13" stroke="#fff" stroke-width="2.4"/><path d="M12 8C9 2 5 4 7 8M12 8c3-6 7-4 5 0" stroke="#b8285f" stroke-width="2" fill="none"/></svg>−20% новым гостям</div>
+        <div class="badge"><svg viewBox="0 0 24 24"><path d="M12 22s7-7 7-12a7 7 0 0 0-14 0c0 5 7 12 7 12Z" fill="#f0508c"/><circle cx="12" cy="10" r="3" fill="#fff"/></svg>Пушкина 13, дом 3</div>
+      </div>
+      <div class="btns">
+        <a href="#menu" class="btn btn-main">🍣 Смотреть меню</a>
+        <a href="tel:+7998174820" class="btn btn-ghost">📞 +7 998 174 820</a>
+      </div>
+    </div>
+
+    <div class="chibi-box reveal">
+      <div class="bubble">Иррассяй-маасэ!<br>Добро пожаловать! ✨</div>
+      <!-- Оригинальный персонаж: Сакура-тян, повар кафе -->
+      <svg class="chibi" viewBox="0 0 300 400" aria-label="Сакура-тян — талисман кафе">
+        <!-- задние волосы -->
+        <path d="M60 150C40 230 60 290 90 300L210 300C240 290 260 230 240 150Z" fill="#ff86b3"/>
+        <!-- тело: кимоно -->
+        <path d="M95 250C80 290 75 350 80 385H220C225 350 220 290 205 250Z" fill="#fff"/>
+        <path d="M95 250C80 290 75 350 80 385H120L150 270Z" fill="#ffd1e3"/>
+        <path d="M205 250C220 290 225 350 220 385H180L150 270Z" fill="#ffd1e3"/>
+        <path d="M120 250L150 300 180 250" fill="none" stroke="#f0508c" stroke-width="7" stroke-linejoin="round"/>
+        <rect x="86" y="305" width="128" height="26" rx="6" fill="#f0508c"/>
+        <path d="M150 305l-14 26h28z" fill="#b8285f"/>
+        <!-- цветочки на кимоно -->
+        <use href="#fl" x="88" y="340" width="22" height="22" fill="#ff9fc3"/>
+        <use href="#fl" x="182" y="350" width="20" height="20" fill="#ff9fc3"/>
+        <use href="#fl" x="110" y="262" width="16" height="16" fill="#ff9fc3"/>
+        <!-- левая рука с подносом -->
+        <path d="M100 265C80 280 70 300 78 318" stroke="#fff" stroke-width="24" stroke-linecap="round" fill="none"/>
+        <circle cx="80" cy="320" r="11" fill="#ffe0cc"/>
+        <ellipse cx="66" cy="318" rx="44" ry="10" fill="#8a4b32"/>
+        <ellipse cx="66" cy="314" rx="44" ry="8" fill="#a8603f"/>
+        <g>
+          <ellipse cx="44" cy="304" rx="14" ry="9" fill="#fff"/><path d="M30 302c6-10 22-10 28 0" fill="#ff8a5b"/><path d="M34 299l4 5M42 297l4 6M50 298l3 5" stroke="#ffd0b8" stroke-width="2"/>
+          <ellipse cx="78" cy="304" rx="14" ry="9" fill="#fff"/><path d="M64 302c6-10 22-10 28 0" fill="#ff8a5b"/><path d="M68 299l4 5M76 297l4 6M84 298l3 5" stroke="#ffd0b8" stroke-width="2"/>
+          <circle cx="102" cy="304" r="9" fill="#2b2b2b"/><circle cx="102" cy="304" r="6" fill="#fff"/><circle cx="102" cy="304" r="2.6" fill="#ff8a5b"/>
+        </g>
+        <!-- правая рука машет -->
+        <g class="wave-arm">
+          <path d="M200 262C225 250 238 228 236 205" stroke="#fff" stroke-width="24" stroke-linecap="round" fill="none"/>
+          <circle cx="236" cy="198" r="13" fill="#ffe0cc"/>
+          <path d="M228 190v-12M234 186v-14M240 186v-13M246 190v-10" stroke="#ffe0cc" stroke-width="6" stroke-linecap="round"/>
+        </g>
+        <!-- шея + голова -->
+        <rect x="136" y="225" width="28" height="30" rx="10" fill="#ffd5bf"/>
+        <circle cx="150" cy="150" r="92" fill="#ffe0cc"/>
+        <!-- пучки -->
+        <circle cx="70" cy="78" r="30" fill="#ff86b3"/><circle cx="230" cy="78" r="30" fill="#ff86b3"/>
+        <circle cx="70" cy="78" r="12" fill="#ff6aa0"/><circle cx="230" cy="78" r="12" fill="#ff6aa0"/>
+        <!-- чёлка -->
+        <path d="M58 150C52 80 100 50 150 50S250 80 242 150C230 120 215 100 196 92 200 112 190 128 178 132 178 112 168 98 150 92 140 112 120 126 100 128 110 112 108 100 104 94 84 108 68 126 58 150Z" fill="#ff86b3"/>
+        <path d="M110 70C130 60 165 58 190 68" stroke="#ffc0d8" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <!-- заколка-цветок -->
+        <use href="#fl" x="200" y="60" width="44" height="44" fill="#fff"/>
+        <!-- глаза -->
+        <g class="blink">
+          <ellipse cx="112" cy="168" rx="21" ry="27" fill="#4a1f33"/>
+          <ellipse cx="188" cy="168" rx="21" ry="27" fill="#4a1f33"/>
+          <ellipse cx="112" cy="176" rx="15" ry="17" fill="#c2367a"/>
+          <ellipse cx="188" cy="176" rx="15" ry="17" fill="#c2367a"/>
+          <ellipse cx="112" cy="184" rx="10" ry="8" fill="#ff7fb0"/>
+          <ellipse cx="188" cy="184" rx="10" ry="8" fill="#ff7fb0"/>
+          <circle cx="104" cy="158" r="8" fill="#fff"/><circle cx="180" cy="158" r="8" fill="#fff"/>
+          <circle cx="120" cy="180" r="3.5" fill="#fff"/><circle cx="196" cy="180" r="3.5" fill="#fff"/>
+        </g>
+        <path d="M90 138q22-10 42 0M168 138q22-10 42 0" stroke="#4a1f33" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <!-- румянец, рот -->
+        <ellipse cx="88" cy="204" rx="16" ry="8" fill="#ff9fc3" opacity=".7"/>
+        <ellipse cx="212" cy="204" rx="16" ry="8" fill="#ff9fc3" opacity=".7"/>
+        <path d="M138 206q12 14 24 0" fill="#b8285f"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROMO ================= -->
+<section class="promo">
+  <div class="promo-card reveal">
+    <div class="pct">−20%</div>
+    <div>
+      <h3>Скидка 20% для первого клиента!</h3>
+      <p>Первый раз у нас? Скажите об этом при заказе в кафе или по телефону — и любой сет обойдётся всего в <b>440 ₽</b> вместо 550 ₽.</p>
+    </div>
+    <svg class="gift" viewBox="0 0 100 100" aria-hidden="true">
+      <rect x="12" y="42" width="76" height="52" rx="8" fill="#fff"/>
+      <rect x="6" y="30" width="88" height="18" rx="6" fill="#ffe3ee"/>
+      <rect x="44" y="30" width="12" height="64" fill="#b8285f"/>
+      <path d="M50 30C38 6 16 12 26 26 30 31 42 30 50 30ZM50 30C62 6 84 12 74 26 70 31 58 30 50 30Z" fill="#b8285f"/>
+      <use href="#fl" x="18" y="58" width="20" height="20" fill="#ff9fc3"/>
+      <use href="#fl" x="64" y="66" width="16" height="16" fill="#ff9fc3"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ================= MENU ================= -->
+<section id="menu">
+  <div class="wrap">
+    <div class="menu-head reveal">
+      <svg class="mascot" viewBox="0 0 100 100" aria-label="Маки-кун">
+        <ellipse cx="50" cy="92" rx="30" ry="5" fill="#b8285f" opacity=".15"/>
+        <circle cx="50" cy="50" r="40" fill="#2f3b33"/>
+        <circle cx="50" cy="50" r="33" fill="#fff"/>
+        <circle cx="50" cy="38" r="12" fill="#ff8a5b"/>
+        <circle cx="44" cy="40" r="4" fill="#7cc576"/>
+        <circle cx="38" cy="58" r="4.5" fill="#4a1f33"/><circle cx="62" cy="58" r="4.5" fill="#4a1f33"/>
+        <circle cx="39.5" cy="56.5" r="1.6" fill="#fff"/><circle cx="63.5" cy="56.5" r="1.6" fill="#fff"/>
+        <path d="M45 65q5 5 10 0" stroke="#4a1f33" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="30" cy="66" rx="6" ry="3.5" fill="#ff9fc3"/><ellipse cx="70" cy="66" rx="6" ry="3.5" fill="#ff9fc3"/>
+      </svg>
+      <h2 class="title"><span class="jp">お品書き</span>Наше меню</h2>
+    </div>
+    <p class="sub reveal">Четыре вида роллов — все по одной цене. Каждый сет готовится под заказ за 5–10 минут.</p>
+
+    <div class="cards">
+      <article class="card reveal" data-name="Хосомаки">
+        <svg class="icon" viewBox="0 0 120 120" aria-hidden="true">
+          <ellipse cx="60" cy="104" rx="46" ry="7" fill="#ffc6dc"/>
+          <g><circle cx="34" cy="74" r="22" fill="#2f3b33"/><circle cx="34" cy="74" r="17" fill="#fff"/><circle cx="34" cy="74" r="7" fill="#7cc576"/></g>
+          <g><circle cx="86" cy="74" r="22" fill="#2f3b33"/><circle cx="86" cy="74" r="17" fill="#fff"/><circle cx="86" cy="74" r="7" fill="#ff8a5b"/></g>
+          <g><circle cx="60" cy="40" r="22" fill="#2f3b33"/><circle cx="60" cy="40" r="17" fill="#fff"/><circle cx="60" cy="40" r="7" fill="#ffd34d"/></g>
+          <circle cx="54" cy="34" r="2" fill="#fff" opacity=".8"/>
+        </svg>
+        <div class="jp">細巻き</div>
+        <h3>Хосомаки</h3>
+        <p>Тонкие классические роллы: нори снаружи, рис и одна начинка внутри.</p>
+        <div class="price">550 ₽ <small>/ сет</small></div>
+        <div class="first">первым гостям — 440 ₽</div>
+        <button class="btn btn-main add">+ В заказ</button>
+      </article>
+
+      <article class="card reveal" data-name="Футомаки">
+        <svg class="icon" viewBox="0 0 120 120" aria-hidden="true">
+          <ellipse cx="60" cy="106" rx="44" ry="7" fill="#ffc6dc"/>
+          <circle cx="60" cy="58" r="46" fill="#2f3b33"/>
+          <circle cx="60" cy="58" r="40" fill="#fff"/>
+          <rect x="40" y="38" width="16" height="16" rx="4" fill="#ff8a5b"/>
+          <rect x="60" y="36" width="20" height="12" rx="4" fill="#ffd34d"/>
+          <rect x="62" y="52" width="16" height="18" rx="4" fill="#7cc576"/>
+          <rect x="40" y="58" width="18" height="14" rx="4" fill="#ff76a8"/>
+          <rect x="48" y="74" width="24" height="8" rx="4" fill="#c58a5b"/>
+          <circle cx="40" cy="30" r="2" fill="#f0e6d8"/><circle cx="84" cy="80" r="2" fill="#f0e6d8"/>
+        </svg>
+        <div class="jp">太巻き</div>
+        <h3>Футомаки</h3>
+        <p>Большие толстые роллы с несколькими начинками сразу — сытно и ярко.</p>
+        <div class="price">550 ₽ <small>/ сет</small></div>
+        <div class="first">первым гостям — 440 ₽</div>
+        <button class="btn btn-main add">+ В заказ</button>
+      </article>
+
+      <article class="card reveal" data-name="Уромаки">
+        <svg class="icon" viewBox="0 0 120 120" aria-hidden="true">
+          <ellipse cx="60" cy="106" rx="44" ry="7" fill="#ffc6dc"/>
+          <circle cx="60" cy="58" r="44" fill="#ff9a5c"/>
+          <circle cx="60" cy="58" r="40" fill="#fff"/>
+          <g fill="#3a2a22">
+            <ellipse cx="34" cy="40" rx="2.4" ry="1.4" transform="rotate(30 34 40)"/><ellipse cx="80" cy="34" rx="2.4" ry="1.4" transform="rotate(-20 80 34)"/>
+            <ellipse cx="90" cy="66" rx="2.4" ry="1.4" transform="rotate(60 90 66)"/><ellipse cx="30" cy="72" rx="2.4" ry="1.4" transform="rotate(-40 30 72)"/>
+            <ellipse cx="56" cy="92" rx="2.4" ry="1.4"/><ellipse cx="74" cy="88" rx="2.4" ry="1.4" transform="rotate(40 74 88)"/>
+            <ellipse cx="44" cy="24" rx="2.4" ry="1.4" transform="rotate(10 44 24)"/>
+          </g>
+          <circle cx="60" cy="58" r="24" fill="#2f3b33"/>
+          <circle cx="60" cy="58" r="21" fill="#fff8f0"/>
+          <path d="M44 56a16 16 0 0 1 16-14v14Z" fill="#ff8a5b"/>
+          <path d="M60 42a16 16 0 0 1 16 14H60Z" fill="#a6d77b"/>
+          <path d="M44 58h32a16 16 0 0 1-32 0Z" fill="#fff3c4"/>
+        </svg>
+        <div class="jp">裏巻き</div>
+        <h3>Уромаки</h3>
+        <p>Роллы «наизнанку»: рис снаружи, посыпка из кунжута, нори внутри.</p>
+        <div class="price">550 ₽ <small>/ сет</small></div>
+        <div class="first">первым гостям — 440 ₽</div>
+        <button class="btn btn-main add">+ В заказ</button>
+      </article>
+
+      <article class="card reveal" data-name="Тамаки">
+        <svg class="icon" viewBox="0 0 120 120" aria-hidden="true">
+          <ellipse cx="60" cy="108" rx="34" ry="6" fill="#ffc6dc"/>
+          <path d="M36 30C52 16 88 18 96 34L60 104Z" fill="#fff"/>
+          <path d="M44 30c6-14 22-16 30-6" fill="#ff8a5b"/>
+          <path d="M70 26l14-14 6 4-12 14Z" fill="#7cc576"/>
+          <path d="M80 30l10-10 4 3-8 9Z" fill="#5ea85c"/>
+          <circle cx="58" cy="32" r="3" fill="#ffb02e"/><circle cx="64" cy="34" r="3" fill="#ffb02e"/><circle cx="52" cy="35" r="3" fill="#ffb02e"/>
+          <path d="M30 36C46 46 80 46 100 36L60 108Z" fill="#2f3b33"/>
+          <path d="M40 48L60 100" stroke="#4a5a4f" stroke-width="3" opacity=".6"/>
+        </svg>
+        <div class="jp">手巻き</div>
+        <h3>Тамаки</h3>
+        <p>Ручные роллы-конусы из нори — удобно есть прямо руками.</p>
+        <div class="price">550 ₽ <small>/ сет</small></div>
+        <div class="first">первым гостям — 440 ₽</div>
+        <button class="btn btn-main add">+ В заказ</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section>
+  <div class="wrap">
+    <h2 class="title reveal"><span class="jp">特徴</span>Почему «Сакура»</h2>
+    <p class="sub reveal">Быстро, свежо и с душой.</p>
+    <div class="features">
+      <div class="feat reveal">
+        <svg viewBox="0 0 80 80" class="timer-ring" aria-hidden="true">
+          <circle cx="40" cy="40" r="36" fill="#ffe3ee"/>
+          <circle cx="40" cy="40" r="36" fill="none" stroke="#f0508c" stroke-width="6" class="prog" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+          <path class="clock-hand" d="M40 40V16" stroke="#b8285f" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="40" cy="40" r="5" fill="#b8285f"/>
+        </svg>
+        <h3>5–10 минут</h3>
+        <p>Столько нужно, чтобы приготовить ваш сет. Без долгого ожидания.</p>
+      </div>
+      <div class="feat reveal">
+        <svg viewBox="0 0 80 80" aria-hidden="true">
+          <circle cx="40" cy="40" r="36" fill="#ffe3ee"/>
+          <path d="M18 48h44l-6 14H24Z" fill="#f0508c"/>
+          <ellipse cx="40" cy="48" rx="22" ry="5" fill="#fff"/>
+          <path d="M30 40c0-6 4-8 4-14M40 40c0-6 4-8 4-14M50 40c0-6 4-8 4-14" stroke="#ff9fc3" stroke-width="3" fill="none" stroke-linecap="round">
+            <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+          </path>
+          <path d="M22 30l22 12M58 26l-18 16" stroke="#5b3426" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <h3>Всегда свежее</h3>
+        <p>Готовим каждый ролл под заказ, а не заранее.</p>
+      </div>
+      <div class="feat reveal">
+        <svg viewBox="0 0 80 80" aria-hidden="true">
+          <circle cx="40" cy="40" r="36" fill="#ffe3ee"/>
+          <path d="M30 18h20a4 4 0 0 1 4 4v36a4 4 0 0 1-4 4H30a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4Z" fill="#f0508c"/>
+          <rect x="30" y="24" width="20" height="28" rx="2" fill="#fff"/>
+          <circle cx="40" cy="57" r="2.5" fill="#fff"/>
+          <path d="M56 22q8 8 0 16M60 16q14 14 0 28" stroke="#b8285f" stroke-width="3" fill="none" stroke-linecap="round">
+            <animate attributeName="opacity" values="1;.2;1" dur="1.2s" repeatCount="indefinite"/>
+          </path>
+        </svg>
+        <h3>Заказ из дома</h3>
+        <p>Позвоните по номеру <a href="tel:+7998174820"><b>+7 998 174 820</b></a> — и сет будет готов к вашему приходу.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= OMIKUJI ================= -->
+<section id="omikuji">
+  <div class="wrap">
+    <h2 class="title reveal"><span class="jp">おみくじ</span>Суши-предсказание</h2>
+    <p class="sub reveal">В японских храмах тянут бумажку с предсказанием — омикудзи. Потрясите коробочку и узнайте, какой ролл вам сегодня подходит!</p>
+    <div class="omi reveal">
+      <svg class="omi-box" id="omiBox" viewBox="0 0 120 160" role="button" tabindex="0" aria-label="Потрясти коробку омикудзи">
+        <rect x="50" y="4" width="10" height="34" rx="3" fill="#e8c9a0"/>
+        <rect x="62" y="10" width="10" height="28" rx="3" fill="#f2dab6"/>
+        <path d="M24 34h72l-6 120H30Z" fill="#f0508c"/>
+        <path d="M24 34h72v12H24z" fill="#b8285f"/>
+        <rect x="40" y="62" width="40" height="70" rx="6" fill="#fff"/>
+        <text x="60" y="94" text-anchor="middle" font-family="Yuji Syuku" font-size="24" fill="#b8285f">御</text>
+        <text x="60" y="122" text-anchor="middle" font-family="Yuji Syuku" font-size="24" fill="#b8285f">籤</text>
+      </svg>
+      <div>
+        <div class="scroll hide" id="omiScroll">
+          <div class="rank" id="omiRank">大吉 <span>Большая удача</span></div>
+          <p id="omiText"></p>
+        </div>
+        <button class="btn btn-main" id="omiBtn" style="margin-top:18px">🎋 Тянуть предсказание</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACTS ================= -->
+<section id="contacts">
+  <div class="wrap">
+    <h2 class="title reveal"><span class="jp">連絡先</span>Как нас найти</h2>
+    <p class="sub reveal">Приходите в гости или закажите по телефону.</p>
+    <div class="contacts">
+      <div class="contact reveal">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#ffe3ee"/><path d="M32 54s14-14 14-24a14 14 0 0 0-28 0c0 10 14 24 14 24Z" fill="#f0508c"/><use href="#fl" x="24" y="22" width="16" height="16" fill="#fff"/></svg>
+        <div><b>Адрес</b><span>ул. Пушкина 13, дом 3</span></div>
+      </div>
+      <a class="contact reveal" href="tel:+7998174820">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#ffe3ee"/><path d="M22 16c3 0 6 7 6 9s-4 3-4 5 8 12 10 12 3-4 5-4 9 3 9 6-4 8-8 8C28 52 12 36 12 24c0-4 5-8 10-8Z" fill="#f0508c"/></svg>
+        <div><b>Заказ из дома</b><span>+7 998 174 820</span></div>
+      </a>
+      <div class="map reveal">
+        <!-- стилизованная карта-иллюстрация -->
+        <svg viewBox="0 0 1000 300" aria-label="Схема: кафе Сакура на улице Пушкина">
+          <rect width="1000" height="300" fill="#fff4f8"/>
+          <g fill="#ffe3ee"><rect x="40" y="30" width="200" height="90" rx="14"/><rect x="290" y="30" width="170" height="90" rx="14"/><rect x="560" y="30" width="180" height="90" rx="14"/><rect x="790" y="30" width="170" height="90" rx="14"/>
+          <rect x="40" y="190" width="260" height="90" rx="14"/><rect x="350" y="190" width="160" height="90" rx="14"/><rect x="620" y="190" width="340" height="90" rx="14"/></g>
+          <rect x="0" y="135" width="1000" height="40" fill="#fff"/>
+          <path d="M0 155H1000" stroke="#ffc6dc" stroke-width="3" stroke-dasharray="18 14"/>
+          <rect x="500" y="0" width="40" height="300" fill="#fff"/>
+          <text x="80" y="166" font-family="Nunito" font-weight="900" font-size="18" fill="#b8285f">ул. Пушкина</text>
+          <g transform="translate(760 150)">
+            <ellipse cx="0" cy="22" rx="18" ry="5" fill="#b8285f" opacity=".2"/>
+            <path d="M0 18s-24-24-24-42a24 24 0 0 1 48 0C24-6 0 18 0 18Z" fill="#f0508c">
+              <animateTransform attributeName="transform" type="translate" values="0 0;0 -10;0 0" dur="1.6s" repeatCount="indefinite"/>
+            </path>
+          </g>
+          <rect x="560" y="30" width="180" height="90" rx="14" fill="none" stroke="#f0508c" stroke-width="3" stroke-dasharray="8 6"/>
+          <text x="650" y="70" text-anchor="middle" font-family="Comfortaa" font-weight="700" font-size="22" fill="#b8285f">Сакура 🌸</text>
+          <text x="650" y="96" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="15" fill="#7b4a60">Пушкина 13, дом 3</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="jp">桜</span>
+  Суши-кафе «Сакура» · ул. Пушкина 13, дом 3 · <a href="tel:+7998174820">+7 998 174 820</a><br>
+  Все сеты — 550 ₽ · Первому клиенту −20%
+</footer>
+
+<!-- ================= CART ================= -->
+<button class="cart-btn" id="cartBtn" aria-label="Мой заказ">
+  <svg viewBox="0 0 40 40" aria-hidden="true">
+    <path d="M6 18h28l-3 14a4 4 0 0 1-4 3H13a4 4 0 0 1-4-3Z" fill="#fff"/>
+    <ellipse cx="20" cy="18" rx="14" ry="3" fill="#ffe3ee"/>
+    <path d="M10 6l14 10M30 4L18 15" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>
+  <span class="cart-count" id="cartCount">0</span>
+</button>
+<div class="panel hide" id="panel">
+  <h3>🍱 Мой заказ</h3>
+  <div id="rows"></div>
+  <label class="check"><input type="checkbox" id="firstChk"> Я здесь впервые (−20%)</label>
+  <div class="total"><span>Итого:</span><span id="total">0 ₽</span></div>
+  <a class="btn btn-main" href="tel:+7998174820">📞 Позвонить и заказать</a>
+  <p class="note">Продиктуйте заказ по телефону — приготовим за 5–10 минут.</p>
+</div>
+
+<script>
+/* ---------- цветы на дереве ---------- */
+(() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const flowers = document.getElementById("flowers"), blobs = document.getElementById("blobs");
+  const clusters = [[200,60,44],[300,145,40],[400,48,40],[420,200,30],[150,230,34],[330,10,30],[230,262,26],
+    [460,85,26],[110,100,36],[260,110,36],[360,175,30],[50,90,34],[20,140,30],[280,40,34],[180,190,30],[290,195,22],[80,170,26]];
+  const colors = ["#ffd1e3","#ffb3cf","#ff9fc3","#ffc6dc","#fff0f6","#ff86b3"];
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (const [x,y,r] of clusters) {
+    const b = document.createElementNS(NS,"circle");
+    b.setAttribute("cx",x); b.setAttribute("cy",y); b.setAttribute("r",r*1.5); b.setAttribute("fill","url(#blob)");
+    blobs.appendChild(b);
+    const n = Math.round(r * .55);
+    for (let i = 0; i < n; i++) {
+      const a = rnd()*Math.PI*2, d = Math.sqrt(rnd())*r, s = 12 + rnd()*14;
+      const u = document.createElementNS(NS,"use");
+      u.setAttribute("href","#fl");
+      u.setAttribute("x", x + Math.cos(a)*d - s/2); u.setAttribute("y", y + Math.sin(a)*d - s/2);
+      u.setAttribute("width", s); u.setAttribute("height", s);
+      u.setAttribute("fill", colors[Math.floor(rnd()*colors.length)]);
+      u.setAttribute("transform", `rotate(${rnd()*72} ${x + Math.cos(a)*d} ${y + Math.sin(a)*d})`);
+      flowers.appendChild(u);
+    }
+  }
+})();
+
+/* ---------- падающие лепестки ---------- */
+const cv = document.getElementById("petals"), ctx = cv.getContext("2d");
+let W, H, dpr; const petals = [];
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function resize(){ dpr = Math.min(devicePixelRatio||1, 2); W = innerWidth; H = innerHeight; cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); }
+resize(); addEventListener("resize", resize);
+function makePetal(fromTree){
+  const tw = Math.min(560, W*.62);
+  return {
+    x: fromTree ? Math.random()*tw*.85 : Math.random()*W,
+    y: fromTree ? Math.random()*tw*.45 : -20 - Math.random()*H,
+    s: 7 + Math.random()*8, vy: .6 + Math.random()*1.1, vx: .3 + Math.random()*.9,
+    rot: Math.random()*6.28, vr: (Math.random()-.5)*.06, ph: Math.random()*6.28,
+    c: ["#ffb3cf","#ff9fc3","#ffd1e3","#ff86b3"][Math.floor(Math.random()*4)]
+  };
+}
+for (let i = 0; i < (W < 600 ? 22 : 40); i++) petals.push(makePetal(false));
+function drawPetal(p){
+  ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.scale(1, Math.abs(Math.sin(p.ph))*.6+.4);
+  ctx.fillStyle = p.c; ctx.beginPath();
+  ctx.moveTo(0,-p.s); ctx.bezierCurveTo(p.s*.9,-p.s*.6, p.s*.7,p.s*.6, 0,p.s);
+  ctx.bezierCurveTo(-p.s*.7,p.s*.6, -p.s*.9,-p.s*.6, 0,-p.s);
+  ctx.fill(); ctx.fillStyle="rgba(255,255,255,.5)"; ctx.beginPath(); ctx.ellipse(-p.s*.15,-p.s*.2,p.s*.15,p.s*.45,0,0,6.28); ctx.fill();
+  ctx.restore();
+}
+function tick(t){
+  ctx.clearRect(0,0,W,H);
+  for (let i = petals.length-1; i >= 0; i--) {
+    const p = petals[i];
+    p.ph += .03; p.y += p.vy; p.x += p.vx + Math.sin(p.ph)*.8; p.rot += p.vr;
+    if (p.y > H+20 || p.x > W+20) { if (p.burst) petals.splice(i,1); else Object.assign(p, makePetal(false), {y:-20}); continue; }
+    drawPetal(p);
+  }
+  requestAnimationFrame(tick);
+}
+if (!reduce) requestAnimationFrame(tick);
+
+/* ---------- потрясти дерево ---------- */
+const tree = document.getElementById("tree"), hint = document.getElementById("treeHint");
+tree.addEventListener("click", () => {
+  tree.classList.remove("shake"); void tree.offsetWidth; tree.classList.add("shake");
+  hint.style.opacity = 0;
+  for (let i = 0; i < 45; i++) { const p = makePetal(true); p.burst = true; p.vy += Math.random()*1.5; p.vx += Math.random()*1.5; petals.push(p); }
+});
+tree.addEventListener("animationend", e => { if (e.animationName === "shake") tree.classList.remove("shake"); });
+setTimeout(() => hint.style.opacity = 0, 9000);
+
+/* ---------- появление при скролле ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), {threshold:.15});
+document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+/* ---------- корзина ---------- */
+const PRICE = 550, cart = {};
+const $ = id => document.getElementById(id);
+const panel = $("panel"), rows = $("rows");
+function render(){
+  const names = Object.keys(cart).filter(n => cart[n] > 0);
+  const count = names.reduce((s,n) => s + cart[n], 0);
+  $("cartCount").textContent = count;
+  rows.innerHTML = names.length ? "" : '<p class="empty">Пока пусто — добавьте сет из меню 🍣</p>';
+  for (const n of names) {
+    const r = document.createElement("div"); r.className = "row";
+    r.innerHTML = `<span><b>${n}</b><br><small>${PRICE} ₽ × ${cart[n]}</small></span>
+      <span class="qty"><button aria-label="Меньше">−</button><b>${cart[n]}</b><button aria-label="Больше">+</button></span>`;
+    const [minus, plus] = r.querySelectorAll("button");
+    minus.onclick = () => { cart[n]--; render(); };
+    plus.onclick = () => { cart[n]++; render(); };
+    rows.appendChild(r);
+  }
+  const sum = count * PRICE;
+  $("total").innerHTML = $("firstChk").checked && sum ? `<span><s>${sum} ₽</s>${Math.round(sum*.8)} ₽</span>` : `${sum} ₽`;
+}
+$("firstChk").onchange = render;
+$("cartBtn").onclick = () => panel.classList.toggle("hide");
+document.querySelectorAll(".add").forEach(btn => btn.addEventListener("click", () => {
+  const n = btn.closest(".card").dataset.name;
+  cart[n] = (cart[n]||0) + 1; render();
+  btn.textContent = "✓ Добавлено"; btn.classList.add("done");
+  setTimeout(() => { btn.textContent = "+ В заказ"; btn.classList.remove("done"); }, 1200);
+  const cb = $("cartBtn"); cb.classList.remove("bump"); void cb.offsetWidth; cb.classList.add("bump");
+}));
+render();
+
+/* ---------- омикудзи ---------- */
+const fortunes = [
+  ["大吉","Большая удача","Сегодня звёзды за футомаки! Берите самый большой ролл — день будет щедрым."],
+  ["中吉","Средняя удача","Хосомаки принесут гармонию. Маленькие радости — самые вкусные."],
+  ["小吉","Малая удача","Уромаки наизнанку — и проблемы вывернутся в вашу пользу."],
+  ["吉","Удача","Тамаки в руке — удача в кармане. Ешьте руками, не стесняйтесь!"],
+  ["末吉","Удача впереди","Ваше счастье придёт через 5–10 минут. Ровно столько готовится сет."],
+  ["大吉","Большая удача","Возьмите все четыре сета и угостите друзей — дружба станет крепче."],
+  ["中吉","Средняя удача","Если вы у нас впервые — скидка 20% уже ждёт вас. Судьба!"]
+];
+let lastF = -1;
+function draw(){
+  const box = $("omiBox"), sc = $("omiScroll");
+  box.classList.remove("shake"); void box.getBBox(); box.classList.add("shake");
+  sc.classList.add("hide");
+  setTimeout(() => {
+    let i; do { i = Math.floor(Math.random()*fortunes.length); } while (i === lastF); lastF = i;
+    const [k, r, t] = fortunes[i];
+    $("omiRank").innerHTML = `${k} <span>${r}</span>`; $("omiText").textContent = t;
+    sc.classList.remove("hide"); box.classList.remove("shake");
+  }, 750);
+}
+$("omiBtn").onclick = draw;
+$("omiBox").onclick = draw;
+$("omiBox").onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); draw(); } };
+</script>
+</body>
+</html>
