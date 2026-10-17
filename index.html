@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сакура — суши-бар</title>
+<meta name="description" content="Суши-бар «Сакура»: хосомаки, футомаки, уромаки, тамаки — 550 ₽ за сет. Готовим за 5–10 минут. Пушкина 13, дом 3. Первому гостю −20%.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Playfair+Display:ital,wght@1,500;1,700&family=Manrope:wght@400;600;800&family=Noto+Serif+JP:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d0608; --ink-2:#170a0f; --ink-3:#241018;
+  --crimson:#c8102e; --blood:#7d0a1f; --pink:#ff4f8b; --pink-soft:#ff9ec0;
+  --gold:#d9ab4f; --gold-soft:#f1d28c; --washi:#f4e7d3; --muted:#b9a2a8;
+  --line:rgba(217,171,79,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Manrope",system-ui,sans-serif;color:var(--washi);
+  background:
+    radial-gradient(900px 700px at 0% 0%, rgba(255,79,139,.28), transparent 60%),
+    radial-gradient(800px 600px at 100% 30%, rgba(200,16,46,.22), transparent 60%),
+    radial-gradient(700px 700px at 30% 80%, rgba(125,10,31,.25), transparent 60%),
+    var(--ink);
+  background-attachment:fixed;
+  overflow-x:hidden;min-height:100vh;
+}
+a{color:inherit}
+img{display:block;max-width:100%}
+.jp{font-family:"Noto Serif JP",serif;font-weight:900}
+.disp{font-family:"Unbounded",sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:.9}
+.serif{font-family:"Playfair Display",serif;font-style:italic}
+
+/* зерно плёнки поверх всего */
+.grain{position:fixed;inset:-50%;z-index:90;pointer-events:none;opacity:.09;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 1s steps(4) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-1%)}}
+
+/* ---------- дерево (PNG) + тень ---------- */
+.tree-wrap{position:fixed;left:0;top:0;width:min(660px,68vw);z-index:30;pointer-events:none}
+.tree-shadow,.tree{position:absolute;left:0;top:0;width:100%;transform-origin:0 45%}
+.tree-shadow{filter:brightness(0) blur(14px);opacity:.55;transform:translate(46px,70px) skewX(-8deg);animation:sway 8s ease-in-out infinite}
+.tree{pointer-events:none;
+  filter:drop-shadow(0 0 1px rgba(255,180,210,.6)) drop-shadow(10px 18px 14px rgba(0,0,0,.75)) drop-shadow(0 0 40px rgba(255,79,139,.35));
+  animation:sway 8s ease-in-out infinite;
+  -webkit-mask:linear-gradient(#000,#000);
+}
+.tree.shake,.tree-shadow.shake{animation:shake 1s ease-in-out}
+@keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(1.4deg)}}
+.tree-shadow{animation-name:sway2}
+@keyframes sway2{0%,100%{transform:translate(46px,70px) skewX(-8deg) rotate(0)}50%{transform:translate(50px,72px) skewX(-8deg) rotate(1.4deg)}}
+@keyframes shake{0%,100%{transform:rotate(0)}15%{transform:rotate(3.5deg)}35%{transform:rotate(-3deg)}55%{transform:rotate(2deg)}75%{transform:rotate(-1deg)}}
+.tree-glow{position:fixed;left:-10vw;top:-15vw;width:60vw;height:50vw;z-index:1;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(255,79,139,.35),transparent);filter:blur(20px)}
+#petals{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:45}
+
+/* курсор в духе «ゴゴゴ»: золотая стрела + след из катаканы + «ドン!» на клик */
+.cursor{position:fixed;left:0;top:0;width:38px;height:38px;pointer-events:none;z-index:100;display:none;will-change:transform}
+.cursor svg{width:100%;height:100%;transform-origin:3px 3px;transition:transform .25s cubic-bezier(.2,1.6,.4,1);filter:drop-shadow(3px 4px 0 rgba(0,0,0,.7))}
+.cursor .ring{position:absolute;left:-16px;top:-16px;width:38px;height:38px;border:2px dashed var(--pink);border-radius:50%;opacity:0;transform:scale(.4);transition:.3s}
+.cursor.big svg{transform:scale(1.3) rotate(-12deg)}
+.cursor.big .ring{opacity:1;transform:scale(1);animation:spin 4s linear infinite}
+.cursor.down svg{transform:scale(.8) rotate(8deg)}
+.gtrail,.gboom{position:fixed;left:0;top:0;pointer-events:none;z-index:99;font-family:"Noto Serif JP",serif;font-weight:900;color:#b05cff;
+  -webkit-text-stroke:1.5px #0d0608;text-shadow:3px 3px 0 #0d0608}
+.gtrail{font-size:22px;animation:gtrail .9s ease-out forwards}
+@keyframes gtrail{from{opacity:.95;transform:translate(var(--x),var(--y)) rotate(-8deg) scale(1)}to{opacity:0;transform:translate(calc(var(--x) + 14px),calc(var(--y) - 46px)) rotate(6deg) scale(.6)}}
+.gboom{font-family:"Unbounded",sans-serif;font-size:42px;color:var(--gold-soft);-webkit-text-stroke:2px #0d0608;text-shadow:4px 4px 0 var(--crimson);animation:gboom .8s cubic-bezier(.2,1.6,.4,1) forwards;white-space:nowrap}
+@keyframes gboom{0%{opacity:0;transform:translate(var(--x),var(--y)) translate(-50%,-50%) scale(.2) rotate(-20deg)}30%{opacity:1;transform:translate(var(--x),var(--y)) translate(-50%,-90%) scale(1.15) rotate(-8deg)}100%{opacity:0;transform:translate(var(--x),var(--y)) translate(-50%,-160%) scale(.9) rotate(-4deg)}}
+@media (pointer:fine){
+  .cursor{display:block}
+  body,a,button,.tree,.omi-box,.hall{cursor:none}
+  input,select,textarea{cursor:text}
+}
+
+/* ---------- навигация ---------- */
+nav{position:fixed;top:16px;right:16px;z-index:60;display:flex;gap:4px;align-items:center;
+  background:rgba(13,6,8,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--line);padding:6px;border-radius:4px}
+nav a{text-decoration:none;font:700 12px "Unbounded";text-transform:uppercase;letter-spacing:.06em;padding:11px 14px;border-radius:2px;transition:.2s}
+nav a:hover{background:var(--ink-3);color:var(--gold-soft)}
+nav .call{background:var(--crimson);color:#fff}
+nav .call:hover{background:var(--pink);color:#fff}
+
+section{position:relative;padding:120px 24px}
+.wrap{max-width:1240px;margin:0 auto;position:relative;z-index:2}
+.eyebrow{display:flex;align-items:center;gap:14px;font:700 12px "Unbounded";letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.eyebrow::before{content:"";width:46px;height:1px;background:var(--gold)}
+.h2{font-size:clamp(44px,8vw,120px);margin:18px 0 14px}
+.h2 .o{color:transparent;-webkit-text-stroke:2px var(--pink)}
+.lead{color:var(--muted);font-size:18px;max-width:620px;line-height:1.6}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;min-height:100svh;padding-top:clamp(260px,34vw,420px);padding-bottom:80px;overflow:hidden}
+.hero .disc{position:absolute;right:-6vw;top:8vh;width:min(720px,70vw);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#ff3a5f,var(--crimson) 45%,var(--blood) 80%);
+  box-shadow:0 0 120px rgba(200,16,46,.6),inset -40px -60px 120px rgba(0,0,0,.45);z-index:0}
+.hero .disc::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:repeating-linear-gradient(0deg,transparent 0 26px,rgba(13,6,8,.85) 26px 32px);
+  -webkit-mask:linear-gradient(transparent 55%,#000 56%);mask:linear-gradient(transparent 55%,#000 56%)}
+.hero .wave{position:absolute;right:-4vw;bottom:-4vw;width:min(900px,80vw);z-index:1;
+  filter:drop-shadow(-20px 20px 30px rgba(0,0,0,.6)) saturate(1.1);will-change:transform;
+  -webkit-mask:linear-gradient(90deg,transparent 0%,#000 32%);mask:linear-gradient(90deg,transparent 0%,#000 32%)}
+.hero .vert{position:absolute;right:24px;top:110px;writing-mode:vertical-rl;font-size:clamp(70px,10vw,150px);
+  color:transparent;-webkit-text-stroke:1.5px rgba(244,231,211,.55);z-index:1;letter-spacing:.05em;line-height:1}
+.hero-text{position:relative;z-index:3;max-width:760px}
+.hero .eyebrow{color:var(--gold-soft);text-shadow:0 2px 8px #000}
+.hero h1{font-size:clamp(70px,14vw,210px);position:relative;color:var(--washi);
+  text-shadow:6px 6px 0 var(--crimson),12px 12px 0 rgba(255,79,139,.5)}
+.hero h1 .ghost{position:absolute;left:0;top:0;color:transparent;-webkit-text-stroke:1.5px var(--gold);
+  transform:translate(-10px,-10px);text-shadow:none;pointer-events:none;animation:glitch 6s infinite}
+@keyframes glitch{0%,92%,100%{transform:translate(-10px,-10px)}93%{transform:translate(4px,-14px)}95%{transform:translate(-18px,-4px)}97%{transform:translate(-6px,-12px)}}
+.hero .sub{font-size:clamp(26px,3.6vw,44px);color:var(--pink-soft);margin:22px 0 14px}
+.hero p.desc{font-size:19px;line-height:1.6;color:#d8c3c8;max-width:520px;text-shadow:0 2px 10px #000}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0}
+.chip{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:rgba(23,10,15,.75);backdrop-filter:blur(6px);
+  padding:11px 16px;font:700 13px "Unbounded";text-transform:uppercase;letter-spacing:.04em}
+.chip svg{width:20px;height:20px;flex:none}
+.chip.hot{background:var(--crimson);border-color:var(--crimson)}
+.btns{display:flex;flex-wrap:wrap;gap:14px}
+/* кнопки: срезанные углы, золотая рамка, заливка выезжает слева, хроматический сдвиг текста */
+.btn{--cut:14px;position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:14px;border:0;cursor:pointer;text-decoration:none;
+  font:700 13px "Unbounded";text-transform:uppercase;letter-spacing:.08em;padding:20px 30px;color:var(--washi);background:var(--gold);
+  clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+  transition:color .35s,transform .2s,text-shadow .2s}
+.btn::before,.btn::after{content:"";position:absolute;inset:2px;clip-path:inherit}
+.btn::before{z-index:-2;background:var(--ink-2)}
+.btn::after{z-index:-1;background:linear-gradient(100deg,var(--crimson),var(--pink));transform:scaleX(0);transform-origin:left;transition:transform .45s cubic-bezier(.7,0,.2,1)}
+.btn:hover::after,.btn:focus-visible::after{transform:scaleX(1)}
+.btn:hover{text-shadow:2px 0 rgba(255,79,139,.8),-2px 0 rgba(60,200,255,.6)}
+.btn:active{transform:scale(.96)}
+.btn .arr{display:inline-block;font-family:"Noto Serif JP";transition:transform .35s cubic-bezier(.2,1.6,.4,1)}
+.btn:hover .arr{transform:translateX(6px) rotate(-10deg)}
+.btn-red::before{background:var(--crimson)}
+.btn-red::after{background:var(--washi)}
+.btn-red:hover{color:var(--ink)}
+.btn-line{background:rgba(244,231,211,.7)}
+.btn-line::after{background:var(--gold)}
+.btn-line:hover{color:var(--ink)}
+.hanko{position:absolute;z-index:4;width:120px;height:120px;border:4px solid var(--crimson);color:var(--crimson);border-radius:12px;
+  display:grid;place-items:center;font-size:62px;transform:rotate(-12deg);background:rgba(244,231,211,.92);
+  box-shadow:0 10px 30px rgba(0,0,0,.5);animation:stamp 1.2s cubic-bezier(.2,1.6,.4,1) .8s both}
+@keyframes stamp{from{transform:rotate(-30deg) scale(3);opacity:0}}
+.hero .hanko{right:min(38vw,520px);bottom:120px}
+
+/* ---------- бегущие строки ---------- */
+.marquees{position:relative;z-index:5;padding:30px 0;overflow:hidden}
+.mq{display:flex;white-space:nowrap;padding:18px 0;font-size:clamp(22px,3vw,40px)}
+.mq-1{background:var(--crimson);transform:rotate(-2deg);margin:0 -40px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.mq-2{background:var(--ink);border-top:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(1.5deg);margin:-12px -40px 0}
+.mq-2 .track{color:transparent;-webkit-text-stroke:1.2px var(--pink-soft);animation-direction:reverse;animation-duration:40s}
+.track{display:flex;gap:40px;padding-right:40px;animation:mq 30s linear infinite;flex:none}
+.track span{display:flex;align-items:center;gap:40px}
+.track i{font-style:normal;color:var(--gold)}
+@keyframes mq{to{transform:translateX(-100%)}}
+
+/* ---------- PROMO ---------- */
+.promo{padding:160px 24px;overflow:hidden;isolation:isolate}
+.promo .bg{position:absolute;inset:0;z-index:-2;background:url(img/skeleton.jpg) center/cover;filter:grayscale(1) contrast(1.3) brightness(.7)}
+.promo::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(90deg,rgba(125,10,31,.95) 0%,rgba(200,16,46,.72) 45%,rgba(13,6,8,.55) 100%);mix-blend-mode:multiply}
+.promo::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,var(--ink),transparent 18%,transparent 82%,var(--ink))}
+.promo .grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:50px;align-items:center}
+.promo .big{font-size:clamp(90px,13vw,210px);color:var(--washi);line-height:.8;text-shadow:10px 10px 0 var(--ink)}
+.promo .big small{display:block;font-size:.2em;color:var(--gold-soft);letter-spacing:.2em;margin-top:18px}
+.promo h3{font:900 clamp(26px,3.4vw,44px)/1.05 "Unbounded";text-transform:uppercase;margin-bottom:18px}
+.promo p{font-size:19px;line-height:1.6;margin-bottom:26px}
+.promo .price-flip{display:flex;align-items:baseline;gap:18px;margin-bottom:30px}
+.promo .price-flip s{font:700 30px "Unbounded";color:rgba(244,231,211,.55)}
+.promo .price-flip b{font:900 64px "Unbounded";color:var(--gold-soft)}
+.gogo{position:absolute;font:900 clamp(40px,6vw,90px) "Noto Serif JP";color:#b05cff;
+  -webkit-text-stroke:2px var(--ink);text-shadow:4px 4px 0 var(--ink);z-index:3;pointer-events:none;animation:gogo 1.4s ease-in-out infinite}
+.gogo:nth-of-type(2){animation-delay:-.5s}.gogo:nth-of-type(3){animation-delay:-.9s}
+@keyframes gogo{0%,100%{transform:translate(0,0) rotate(-6deg);opacity:.9}25%{transform:translate(3px,-2px) rotate(-4deg)}50%{transform:translate(-2px,4px) rotate(-8deg);opacity:1}75%{transform:translate(2px,2px) rotate(-5deg)}}
+
+/* ---------- МЕНЮ ---------- */
+.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:40px;margin-top:60px}
+.dish{position:relative;background:var(--ink-2);border:1px solid var(--line);padding:16px 16px 30px;transition:transform .5s cubic-bezier(.2,1,.3,1),box-shadow .5s}
+.dish:nth-child(even){transform:translateY(70px)}
+.dish:hover{box-shadow:0 30px 80px rgba(200,16,46,.35);border-color:var(--gold)}
+.dish::before,.dish::after{content:"";position:absolute;width:30px;height:30px;border:3px solid var(--gold);z-index:3}
+.dish::before{left:-8px;top:-8px;border-right:0;border-bottom:0}
+.dish::after{right:-8px;bottom:-8px;border-left:0;border-top:0}
+.dish .ph{position:relative;overflow:hidden;aspect-ratio:4/3}
+.dish .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,1,.3,1),filter .6s;filter:saturate(1.15) contrast(1.05)}
+.dish:hover .ph img{transform:scale(1.12) rotate(1deg)}
+.dish .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(13,6,8,.85))}
+.dish .num{position:absolute;left:24px;bottom:10px;z-index:2;font-size:clamp(60px,7vw,100px);color:transparent;-webkit-text-stroke:2px var(--washi)}
+.dish .kanji{position:absolute;right:-14px;top:30px;z-index:3;writing-mode:vertical-rl;background:var(--crimson);padding:16px 10px;font-size:30px;letter-spacing:.1em;box-shadow:6px 6px 0 var(--ink)}
+.dish .body{padding:26px 14px 0}
+.dish h3{font-size:clamp(30px,3.6vw,46px)}
+.dish .serif{color:var(--pink-soft);font-size:20px;margin:8px 0 12px}
+.dish p{color:var(--muted);line-height:1.6;font-size:16px;max-width:440px}
+.dish .row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:24px;flex-wrap:wrap}
+.tag{display:flex;align-items:baseline;gap:12px}
+.tag b{font:900 44px "Unbounded";color:var(--washi)}
+.tag span{font:700 13px "Unbounded";color:var(--gold);text-transform:uppercase;letter-spacing:.1em}
+.tag em{display:block;font:600 14px "Manrope";font-style:normal;color:var(--pink-soft)}
+.add{padding:16px 22px;font-size:12px}
+.add.done{color:var(--ink)}
+.add.done::before{background:var(--gold)}
+.stamp-sm{position:absolute;right:30px;top:-20px;z-index:4;width:92px;height:92px;border-radius:50%;background:var(--gold);color:var(--ink);
+  display:grid;place-items:center;text-align:center;font:900 13px/1.1 "Unbounded";transform:rotate(12deg);box-shadow:0 10px 30px rgba(0,0,0,.5);
+  animation:spinslow 18s linear infinite}
+@keyframes spinslow{to{transform:rotate(372deg)}}
+
+/* ---------- СКОРОСТЬ ---------- */
+.speed .grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:70px;align-items:center}
+.frame{position:relative;padding:14px;border:1px solid var(--gold);background:var(--ink-2);transform:rotate(-2deg);box-shadow:30px 30px 0 var(--crimson)}
+.frame img{width:100%;filter:contrast(1.1) saturate(1.2)}
+.frame .cap{position:absolute;left:-20px;bottom:30px;background:var(--washi);color:var(--ink);padding:10px 16px;font:700 12px "Unbounded";text-transform:uppercase;letter-spacing:.06em;transform:rotate(3deg)}
+.frame .gogo{right:-30px;top:-30px}
+.speed .num{font-size:clamp(90px,12vw,190px);color:var(--washi);line-height:.85;white-space:nowrap}
+.speed .num span{color:transparent;-webkit-text-stroke:2px var(--pink)}
+.speed .unit{font-size:clamp(32px,5vw,70px);color:var(--crimson);margin:8px 0 26px}
+.facts{list-style:none;margin-top:34px;border-top:1px solid var(--line)}
+.facts li{display:grid;grid-template-columns:70px 1fr;gap:16px;padding:22px 0;border-bottom:1px solid var(--line);align-items:center}
+.facts .k{font-size:40px;color:var(--gold);text-align:center}
+.facts b{font:700 18px "Unbounded";text-transform:uppercase;display:block;margin-bottom:4px}
+.facts span{color:var(--muted)}
+.clock{width:80px;height:80px;display:inline-block;vertical-align:middle;margin-left:16px}
+.clock .hand{transform-origin:40px 40px;animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- ГЕРОИ (укиё-э) ---------- */
+.heroes .grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;grid-template-rows:auto auto;gap:22px;margin-top:60px}
+.card-art{position:relative;overflow:hidden;border:1px solid var(--line);background:var(--ink-2);min-height:280px}
+.card-art img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s cubic-bezier(.2,1,.3,1),filter .6s;filter:sepia(.25) contrast(1.1)}
+.card-art:hover img{transform:scale(1.08);filter:none}
+.card-art .lbl{position:absolute;left:0;bottom:0;right:0;padding:60px 22px 20px;background:linear-gradient(transparent,rgba(13,6,8,.95))}
+.card-art .lbl b{font:900 22px "Unbounded";text-transform:uppercase;display:block}
+.card-art .lbl span{color:var(--muted);font-size:14px}
+.card-art .lbl .jp{color:var(--pink);font-size:16px;display:block;margin-bottom:4px}
+.card-art.tall{grid-row:span 2}
+.card-art.wide{grid-column:span 2}
+
+/* ---------- БРОНЬ: 3D-зал ---------- */
+.book .grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:28px;margin-top:50px;align-items:stretch}
+.hall{position:relative;min-height:600px;border:1px solid var(--line);overflow:hidden;touch-action:pan-y;
+  background:radial-gradient(ellipse at 50% 25%,#3a1622,#120709 70%)}
+.hall canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hall .hint{position:absolute;left:18px;bottom:16px;font:700 11px "Unbounded";letter-spacing:.15em;color:var(--muted);text-transform:uppercase;pointer-events:none}
+.hall .legend{position:absolute;right:16px;top:16px;display:flex;gap:16px;font:700 11px "Unbounded";text-transform:uppercase;letter-spacing:.06em;pointer-events:none}
+.legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+.hall .fallback{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:30px;color:var(--muted)}
+.tlabel{position:absolute;left:0;top:0;pointer-events:none;font:700 11px "Unbounded";text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;
+  background:rgba(13,6,8,.85);border:1px solid var(--line);padding:6px 9px;transition:background .2s,color .2s}
+.tlabel b{color:var(--gold)}
+.tlabel.sel{background:var(--gold);color:var(--ink);border-color:var(--gold)}.tlabel.sel b{color:var(--ink)}
+.tlabel.busy{background:var(--crimson);border-color:var(--crimson)}.tlabel.busy b{color:#fff}
+.bform{border:1px solid var(--line);background:linear-gradient(160deg,rgba(200,16,46,.12),transparent 50%),var(--ink-2);padding:30px;display:flex;flex-direction:column;gap:16px}
+.bform h3{font:900 24px "Unbounded";text-transform:uppercase}
+.selbox{display:flex;align-items:center;gap:18px;padding:16px;border:1px dashed var(--line)}
+.selbox .n{font:900 54px/1 "Unbounded";color:var(--gold);min-width:64px;text-align:center}
+.selbox p{color:var(--muted);font-size:14px}
+.selbox b{font:700 15px "Unbounded";text-transform:uppercase;display:block;color:var(--washi);margin-bottom:4px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font:700 10px "Unbounded";letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.field input,.field select{font:600 16px "Manrope";color:var(--washi);background:var(--ink);border:1px solid var(--line);padding:13px 12px;outline:none;border-radius:0;color-scheme:dark;width:100%}
+.field input:focus,.field select:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,79,139,.2)}
+.bmsg{font-size:14px;min-height:20px;color:var(--pink-soft)}
+.bform .btn{width:100%}
+.bdone{display:none;flex-direction:column;gap:14px}
+.bdone.show{display:flex}
+.bdone .ticket{background:var(--washi);color:var(--ink);padding:22px;position:relative;box-shadow:8px 8px 0 var(--crimson)}
+.bdone .ticket .jp{position:absolute;right:16px;top:10px;font-size:40px;color:var(--crimson);opacity:.85}
+.bdone .ticket b{font:900 20px "Unbounded";text-transform:uppercase;display:block;margin-bottom:8px}
+.bdone .ticket p{line-height:1.6}
+.bdone small{color:var(--muted);line-height:1.5}
+
+/* ---------- ОМИКУДЗИ ---------- */
+.omi{display:grid;grid-template-columns:auto 1fr;gap:60px;align-items:center;margin-top:50px;border:1px solid var(--line);padding:50px;background:
+  linear-gradient(135deg,rgba(200,16,46,.15),transparent 60%),var(--ink-2)}
+.omi-box{width:170px;cursor:pointer}
+.omi-box.shake{animation:boxshake .7s ease-in-out}
+@keyframes boxshake{0%,100%{transform:rotate(0)}20%{transform:rotate(-18deg)}40%{transform:rotate(16deg)}60%{transform:rotate(-12deg)}80%{transform:rotate(8deg)}}
+.scroll{background:var(--washi);color:var(--ink);padding:30px 34px;position:relative;transform-origin:top;
+  transition:transform .6s cubic-bezier(.2,1.4,.4,1),opacity .3s;box-shadow:12px 12px 0 var(--crimson);min-height:150px}
+.scroll::before,.scroll::after{content:"";position:absolute;left:-10px;right:-10px;height:14px;background:var(--blood);border-radius:8px}
+.scroll::before{top:-7px}.scroll::after{bottom:-7px}
+.scroll.hide{transform:scaleY(0);opacity:0}
+.scroll .rank{font:900 46px "Noto Serif JP";color:var(--crimson)}
+.scroll .rank span{font:700 16px "Unbounded";color:var(--ink);text-transform:uppercase;margin-left:12px;letter-spacing:.06em}
+.scroll p{font-size:19px;margin-top:8px;line-height:1.5}
+
+/* ---------- КОНТАКТЫ ---------- */
+.contacts .grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:50px;border:1px solid var(--line)}
+.cbox{padding:44px;border-right:1px solid var(--line);position:relative;text-decoration:none;display:block;transition:background .3s}
+.cbox:last-child{border-right:0}
+a.cbox:hover{background:var(--crimson)}
+.cbox small{font:700 12px "Unbounded";letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.cbox .v{font:900 clamp(28px,4vw,54px)/1.05 "Unbounded";text-transform:uppercase;margin-top:16px}
+.cbox p{color:var(--muted);margin-top:14px}
+a.cbox:hover p,a.cbox:hover small{color:var(--washi)}
+.map{grid-column:1/-1;border-top:1px solid var(--line)}
+.map svg{display:block;width:100%;height:auto}
+
+footer{padding:80px 24px 130px;border-top:1px solid var(--line);position:relative;z-index:2;background:var(--ink)}
+footer .wrap{display:grid;grid-template-columns:1fr 1.4fr;gap:40px}
+footer .logo{font-size:clamp(50px,8vw,110px)}
+footer .logo span{color:var(--crimson)}
+footer .credits{font-size:12px;color:#8a7379;line-height:1.7}
+footer .credits a{color:#b9a2a8}
+
+/* ---------- корзина ---------- */
+.cart-btn{position:fixed;right:20px;bottom:20px;z-index:70;width:74px;height:74px;border:0;cursor:pointer;background:var(--crimson);
+  box-shadow:6px 6px 0 var(--gold);display:grid;place-items:center;transition:transform .2s}
+.cart-btn:hover{transform:translate(-2px,-2px)}
+.cart-btn.bump{animation:bump .4s}
+@keyframes bump{50%{transform:scale(1.2) rotate(-6deg)}}
+.cart-btn svg{width:38px;height:38px}
+.cart-count{position:absolute;top:-10px;right:-10px;background:var(--washi);color:var(--ink);font:900 13px "Unbounded";min-width:28px;height:28px;display:grid;place-items:center;border-radius:50%}
+.panel{position:fixed;right:20px;bottom:110px;z-index:70;width:min(380px,calc(100vw - 40px));background:var(--ink-2);border:1px solid var(--gold);
+  box-shadow:0 30px 80px rgba(0,0,0,.7);padding:26px;transform-origin:bottom right;transition:transform .35s cubic-bezier(.2,1.4,.4,1),opacity .25s}
+.panel.hide{transform:scale(.6);opacity:0;pointer-events:none}
+.panel h3{font:900 20px "Unbounded";text-transform:uppercase;margin-bottom:14px}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.prow small{color:var(--muted)}
+.qty{display:flex;align-items:center;gap:10px}
+.qty button{width:32px;height:32px;border:1px solid var(--line);background:transparent;color:var(--washi);font:900 16px "Unbounded";cursor:pointer}
+.qty button:hover{background:var(--crimson)}
+.empty{color:var(--muted);padding:10px 0}
+.check{display:flex;gap:10px;align-items:center;margin:16px 0 8px;font-weight:800;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--crimson)}
+.total{display:flex;justify-content:space-between;align-items:baseline;font:900 22px "Unbounded";margin:10px 0 18px}
+.total s{color:var(--muted);font-size:15px;margin-right:8px}
+.panel .btn{width:100%}
+.panel .note{font-size:13px;color:var(--muted);text-align:center;margin-top:12px}
+
+/* ---------- появление ---------- */
+.reveal{opacity:0;transform:translateY(60px);transition:opacity 1s,transform 1s cubic-bezier(.2,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.dish.reveal.in:nth-child(even){transform:translateY(70px)}
+.split .ch{display:inline-block;transform:translateY(110%);opacity:0;transition:transform .9s cubic-bezier(.2,1,.3,1),opacity .9s}
+.split.in .ch{transform:none;opacity:1}
+
+@media (max-width:960px){
+  .promo .grid,.speed .grid,footer .wrap{grid-template-columns:1fr}
+  .menu-grid{grid-template-columns:1fr;gap:50px}
+  .dish:nth-child(even),.dish.reveal.in:nth-child(even){transform:none}
+  .heroes .grid{grid-template-columns:1fr 1fr}
+  .card-art.tall{grid-row:auto}
+  .omi{grid-template-columns:1fr;justify-items:center;padding:34px 24px}
+  .book .grid{grid-template-columns:1fr}
+  .hall{min-height:440px}
+  .contacts .grid{grid-template-columns:1fr}
+  .cbox{border-right:0;border-bottom:1px solid var(--line)}
+  nav a.hide-sm{display:none}
+  .hero .hanko{right:24px;bottom:auto;top:200px;width:90px;height:90px;font-size:46px}
+  .hero .vert{display:none}
+}
+@media (max-width:560px){
+  section{padding:90px 16px}
+  .heroes .grid{grid-template-columns:1fr}
+  .card-art.wide{grid-column:auto}
+  nav{right:10px;top:10px}
+  nav a{padding:10px 10px;font-size:11px}
+  .dish .kanji{right:-6px}
+  .hero .hanko{display:none}
+  .hero .wave{opacity:.55}
+  .cbox{padding:30px 22px}
+  .frame{box-shadow:14px 14px 0 var(--crimson)}
+  .frame .gogo{right:0}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="cursor" id="cursor" aria-hidden="true">
+  <span class="ring"></span>
+  <svg viewBox="0 0 40 40"><path d="M3 3L35 15 21 20 15 35Z" fill="#d9ab4f" stroke="#0d0608" stroke-width="2.6" stroke-linejoin="round"/><path d="M5 5L21 20" stroke="#c8102e" stroke-width="2.4" stroke-linecap="round"/><path d="M28 13l3-6M31 17l6-2" stroke="#ff4f8b" stroke-width="2.2" stroke-linecap="round"/></svg>
+</div>
+
+<!-- Сакура: вырезанное фото (PNG/WebP) + отбрасываемая тень -->
+<div class="tree-glow"></div>
+<div class="tree-wrap">
+  <img class="tree-shadow" src="img/tree.webp" alt="" aria-hidden="true">
+  <img class="tree" id="tree" src="img/tree.webp" alt="Ветви цветущей сакуры — нажмите, чтобы стряхнуть лепестки">
+</div>
+<canvas id="petals"></canvas>
+
+<nav>
+  <a href="#menu">Меню</a>
+  <a href="#book">Бронь</a>
+  <a href="#heroes" class="hide-sm">Герои</a>
+  <a href="#omikuji" class="hide-sm">Омикудзи</a>
+  <a href="#contacts" class="hide-sm">Адрес</a>
+  <a href="tel:+7998174820" class="call">Заказать</a>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="disc" data-par="0.04"></div>
+  <img class="wave" src="img/wave.webp" alt="Большая волна в Канагаве, Хокусай" data-par="-0.06">
+  <div class="vert jp">桜寿司</div>
+  <div class="hanko jp">桜</div>
+
+  <div class="wrap">
+    <div class="hero-text">
+      <div class="eyebrow">суши-бар · ул. Пушкина 13, дом 3</div>
+      <h1 class="disp">Сакура<span class="ghost" aria-hidden="true">Сакура</span></h1>
+      <div class="sub serif">роллы, достойные сёгуна</div>
+      <p class="desc">Четыре вида роллов, один честный прайс и скорость самурайского удара: каждый сет готовим при вас за 5–10 минут.</p>
+      <div class="chips">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="#d9ab4f" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/></svg>5–10 минут</div>
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="#d9ab4f" stroke-width="2"><path d="M4 7h16v4H4zM6 11h12v9H6zM12 7v13"/></svg>550 ₽ за сет</div>
+        <div class="chip hot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 19L19 5"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></svg>−20% первому гостю</div>
+      </div>
+      <div class="btns">
+        <a href="#menu" class="btn btn-red">Смотреть меню</a>
+        <a href="tel:+7998174820" class="btn btn-line">+7 998 174 820</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="marquees" aria-hidden="true">
+  <div class="mq mq-1 disp"><div class="track"><span>Хосомаки <i>✦</i> Футомаки <i>✦</i> Уромаки <i>✦</i> Тамаки <i>✦</i> 550 ₽ сет <i>✦</i> 5–10 минут <i>✦</i> −20% первому гостю <i>✦</i></span></div><div class="track"><span>Хосомаки <i>✦</i> Футомаки <i>✦</i> Уромаки <i>✦</i> Тамаки <i>✦</i> 550 ₽ сет <i>✦</i> 5–10 минут <i>✦</i> −20% первому гостю <i>✦</i></span></div></div>
+  <div class="mq mq-2 disp"><div class="track"><span>桜 寿司 · Сакура · 細巻き · 太巻き · 裏巻き · 手巻き · </span></div><div class="track"><span>桜 寿司 · Сакура · 細巻き · 太巻き · 裏巻き · 手巻き · </span></div></div>
+</div>
+
+<!-- ================= PROMO ================= -->
+<section class="promo" id="promo">
+  <div class="bg" role="img" aria-label="Гравюра Утагавы Куниёси «Ведьма Такияся и скелет»"></div>
+  <span class="gogo" style="left:4%;top:10%">ゴ</span>
+  <span class="gogo" style="left:12%;top:20%">ゴ</span>
+  <span class="gogo" style="right:8%;bottom:12%">ゴゴ</span>
+  <div class="wrap grid">
+    <div class="big disp reveal">−20%<small>первый визит</small></div>
+    <div class="reveal">
+      <div class="eyebrow">для новых гостей</div>
+      <h3 style="margin-top:18px">Первый раз у нас? Скидка 20% на любой сет</h3>
+      <p>Просто скажите, что вы у нас впервые — в зале или по телефону. Скидка действует на первый заказ.</p>
+      <div class="price-flip"><s>550 ₽</s><b>440 ₽</b></div>
+      <a href="tel:+7998174820" class="btn btn-red">Забрать скидку</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= МЕНЮ ================= -->
+<section id="menu">
+  <div class="wrap">
+    <div class="eyebrow reveal">お品書き · меню</div>
+    <h2 class="h2 disp split" data-split>Четыре <span class="o">пути</span> ролла</h2>
+    <p class="lead reveal">Каждый сет — 550 ₽. Готовим под заказ за 5–10 минут, никаких заготовок с утра.</p>
+
+    <div class="menu-grid">
+      <article class="dish reveal" data-name="Хосомаки">
+        <div class="ph"><img src="img/hosomaki.jpg" alt="Хосомаки" loading="lazy"><div class="num disp">01</div></div>
+        <div class="kanji jp">細巻き</div>
+        <div class="body">
+          <h3 class="disp">Хосомаки</h3>
+          <div class="serif">тонкая классика</div>
+          <p>Нори снаружи, рис и одна начинка внутри. Строго, точно и без лишнего — как удар катаной.</p>
+          <div class="row">
+            <div class="tag"><b>550 ₽</b><span>сет<em>первому гостю 440 ₽</em></span></div>
+            <button class="btn btn-red add">В заказ +</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="dish reveal" data-name="Футомаки">
+        <div class="stamp-sm">ХИТ<br>сета</div>
+        <div class="ph"><img src="img/futomaki.jpg" alt="Футомаки" loading="lazy"><div class="num disp">02</div></div>
+        <div class="kanji jp">太巻き</div>
+        <div class="body">
+          <h3 class="disp">Футомаки</h3>
+          <div class="serif">толстые и щедрые</div>
+          <p>Большой ролл с несколькими начинками сразу. Для тех, кто пришёл всерьёз проголодавшимся.</p>
+          <div class="row">
+            <div class="tag"><b>550 ₽</b><span>сет<em>первому гостю 440 ₽</em></span></div>
+            <button class="btn btn-red add">В заказ +</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="dish reveal" data-name="Уромаки">
+        <div class="ph"><img src="img/uramaki.jpg" alt="Уромаки" loading="lazy"><div class="num disp">03</div></div>
+        <div class="kanji jp">裏巻き</div>
+        <div class="body">
+          <h3 class="disp">Уромаки</h3>
+          <div class="serif">наизнанку</div>
+          <p>Рис снаружи, нори внутри, сверху кунжут. Роллы-бунтари, которые всё делают наоборот.</p>
+          <div class="row">
+            <div class="tag"><b>550 ₽</b><span>сет<em>первому гостю 440 ₽</em></span></div>
+            <button class="btn btn-red add">В заказ +</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="dish reveal" data-name="Тамаки">
+        <div class="ph"><img src="img/temaki.jpg" alt="Тамаки" loading="lazy"><div class="num disp">04</div></div>
+        <div class="kanji jp">手巻き</div>
+        <div class="body">
+          <h3 class="disp">Тамаки</h3>
+          <div class="serif">ручной конус</div>
+          <p>Хрустящий рожок из нори с рисом и начинкой. Едят руками — сразу, пока нори хрустит.</p>
+          <div class="row">
+            <div class="tag"><b>550 ₽</b><span>сет<em>первому гостю 440 ₽</em></span></div>
+            <button class="btn btn-red add">В заказ +</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= СКОРОСТЬ ================= -->
+<section class="speed">
+  <div class="wrap grid">
+    <div class="frame reveal">
+      <span class="gogo">ゴゴゴ</span>
+      <img src="img/musashi.jpg" alt="Миямото Мусаси, гравюра Утагавы Куниёси" loading="lazy">
+      <div class="cap">Миямото Мусаси · Куниёси</div>
+    </div>
+    <div>
+      <div class="eyebrow reveal">速い · скорость</div>
+      <div class="num disp reveal">5<span>–</span>10</div>
+      <div class="unit disp reveal">минут
+        <svg class="clock" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="35" fill="none" stroke="#d9ab4f" stroke-width="3"/><path class="hand" d="M40 40V12" stroke="#ff4f8b" stroke-width="4" stroke-linecap="round"/><circle cx="40" cy="40" r="5" fill="#c8102e"/></svg>
+      </div>
+      <p class="lead reveal">Столько проходит от заказа до готового сета. Мусаси побеждал одним движением — наш повар тоже не тратит время зря.</p>
+      <ul class="facts reveal">
+        <li><div class="k jp">新</div><div><b>Под заказ</b><span>Режем и сворачиваем только после вашего заказа.</span></div></li>
+        <li><div class="k jp">家</div><div><b>Заказ из дома</b><span>Позвоните на <a href="tel:+7998174820">+7 998 174 820</a> — сет будет готов к вашему приходу.</span></div></li>
+        <li><div class="k jp">円</div><div><b>Одна цена</b><span>Любой сет — 550 ₽. Первому гостю — 440 ₽.</span></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ГЕРОИ ================= -->
+<section class="heroes" id="heroes">
+  <div class="wrap">
+    <div class="eyebrow reveal">英雄 · герои</div>
+    <h2 class="h2 disp split" data-split>Герои <span class="o">до аниме</span></h2>
+    <p class="lead reveal">Задолго до манги и аниме Японию покорили гравюры укиё-э: самураи, демоны, морские драконы и гигантские скелеты. Они — лица нашего бара.</p>
+    <div class="grid">
+      <figure class="card-art tall reveal">
+        <img src="img/tamatori.jpg" alt="Тамаэтори спасается от Короля драконов, Куниёси" loading="lazy">
+        <figcaption class="lbl"><span class="jp">玉取姫</span><b>Тамаэтори</b><span>Ныряльщица, сбежавшая от Короля драконов с его жемчужиной. Куниёси, ок. 1853</span></figcaption>
+      </figure>
+      <figure class="card-art wide reveal">
+        <img src="img/skeleton.jpg" alt="Ведьма Такияся и скелет-призрак, Куниёси" loading="lazy">
+        <figcaption class="lbl"><span class="jp">がしゃどくろ</span><b>Гасядокуро</b><span>Гигантский скелет, призванный ведьмой Такиясей. Куниёси, ок. 1844</span></figcaption>
+      </figure>
+      <figure class="card-art reveal">
+        <img src="img/musashi.jpg" alt="Миямото Мусаси" loading="lazy" style="object-position:top">
+        <figcaption class="lbl"><span class="jp">宮本武蔵</span><b>Мусаси</b><span>Непобедимый мечник с двумя клинками</span></figcaption>
+      </figure>
+      <figure class="card-art reveal">
+        <img src="img/sakura1.jpg" alt="Цветущая сакура" loading="lazy">
+        <figcaption class="lbl"><span class="jp">桜</span><b>Сакура</b><span>Цветёт неделю — поэтому каждое мгновение на счету</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ================= БРОНЬ ================= -->
+<section class="book" id="book">
+  <div class="wrap">
+    <div class="eyebrow reveal">予約 · бронирование</div>
+    <h2 class="h2 disp split" data-split>Выбери <span class="o">столик</span></h2>
+    <p class="lead reveal">Это 3D-зал «Сакуры». Крутите его мышкой или пальцем, нажмите на свободный столик и заполните бронь справа.</p>
+    <div class="grid">
+      <div class="hall reveal" id="hall">
+        <div class="legend"><span><i style="background:#6b4a33"></i>свободен</span><span><i style="background:#d9ab4f"></i>выбран</span><span><i style="background:#c8102e"></i>занят</span></div>
+        <div class="hint">⟲ потяните, чтобы повернуть зал</div>
+      </div>
+      <form class="bform reveal" id="bform" novalidate>
+        <h3>Бронь столика</h3>
+        <div class="selbox">
+          <div class="n" id="selN">—</div>
+          <div><b id="selT">Столик не выбран</b><p id="selD">Нажмите на столик в 3D-зале или выберите его ниже.</p></div>
+        </div>
+        <div class="fields">
+          <div class="field full"><label for="fTable">Столик</label><select id="fTable"></select></div>
+          <div class="field"><label for="fDate">Дата</label><input type="date" id="fDate" required></div>
+          <div class="field"><label for="fTime">Время</label><input type="time" id="fTime" step="1800" value="19:00" required></div>
+          <div class="field"><label for="fGuests">Гостей</label><select id="fGuests"></select></div>
+          <div class="field"><label for="fName">Имя</label><input id="fName" autocomplete="name" placeholder="Как к вам обращаться" required></div>
+          <div class="field full"><label for="fPhone">Телефон</label><input type="tel" id="fPhone" autocomplete="tel" placeholder="+7 ___ ___-__-__" required></div>
+        </div>
+        <div class="bmsg" id="bmsg" role="status"></div>
+        <button class="btn btn-red" type="submit">Забронировать</button>
+        <div class="bdone" id="bdone">
+          <div class="ticket"><span class="jp">予約</span><b>Бронь оформлена</b><p id="ticketText"></p></div>
+          <small>Бронь сохранена в этом браузере. Чтобы кафе точно оставило столик за вами — позвоните и подтвердите.</small>
+          <a class="btn btn-line" href="tel:+7998174820">Подтвердить звонком</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ОМИКУДЗИ ================= -->
+<section id="omikuji">
+  <div class="wrap">
+    <div class="eyebrow reveal">おみくじ · предсказание</div>
+    <h2 class="h2 disp split" data-split>Омикудзи <span class="o">судьбы</span></h2>
+    <p class="lead reveal">В японских храмах тянут бумажный свиток с предсказанием. Встряхните коробку — узнайте, какой ролл вам сегодня предначертан.</p>
+    <div class="omi reveal">
+      <svg class="omi-box" id="omiBox" viewBox="0 0 120 170" role="button" tabindex="0" aria-label="Встряхнуть коробку омикудзи">
+        <rect x="50" y="2" width="9" height="40" fill="#e8c9a0"/><rect x="62" y="8" width="9" height="34" fill="#f2dab6"/>
+        <path d="M22 36h76l-6 128H28Z" fill="#c8102e"/><path d="M22 36h76v12H22z" fill="#7d0a1f"/>
+        <path d="M22 36h76" stroke="#d9ab4f" stroke-width="3"/><path d="M28 160h64" stroke="#d9ab4f" stroke-width="3"/>
+        <rect x="38" y="62" width="44" height="80" fill="#f4e7d3"/>
+        <text x="60" y="96" text-anchor="middle" font-family="Noto Serif JP" font-weight="900" font-size="26" fill="#c8102e">御</text>
+        <text x="60" y="128" text-anchor="middle" font-family="Noto Serif JP" font-weight="900" font-size="26" fill="#c8102e">籤</text>
+      </svg>
+      <div style="width:100%">
+        <div class="scroll hide" id="omiScroll">
+          <div class="rank" id="omiRank">大吉</div>
+          <p id="omiText"></p>
+        </div>
+        <button class="btn btn-red" id="omiBtn" style="margin-top:30px">Тянуть свиток</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= КОНТАКТЫ ================= -->
+<section class="contacts" id="contacts">
+  <div class="wrap">
+    <div class="eyebrow reveal">連絡先 · контакты</div>
+    <h2 class="h2 disp split" data-split>Где нас <span class="o">найти</span></h2>
+    <div class="grid reveal">
+      <div class="cbox">
+        <small>Адрес</small>
+        <div class="v">ул. Пушкина 13,<br>дом 3</div>
+        <p>Приходите — сет будет готов, пока вы снимаете пальто.</p>
+      </div>
+      <a class="cbox" href="tel:+7998174820">
+        <small>Заказ из дома</small>
+        <div class="v">+7 998<br>174 820</div>
+        <p>Позвоните и продиктуйте заказ → готовим за 5–10 минут.</p>
+      </a>
+      <div class="map">
+        <svg viewBox="0 0 1200 280" aria-label="Схема: суши-бар Сакура на улице Пушкина">
+          <rect width="1200" height="280" fill="#170a0f"/>
+          <g fill="#241018"><rect x="40" y="24" width="250" height="86" /><rect x="330" y="24" width="200" height="86"/><rect x="620" y="24" width="210" height="86"/><rect x="870" y="24" width="290" height="86"/>
+          <rect x="40" y="170" width="320" height="86"/><rect x="400" y="170" width="130" height="86"/><rect x="620" y="170" width="540" height="86"/></g>
+          <rect x="0" y="122" width="1200" height="36" fill="#0d0608"/>
+          <path d="M0 140H1200" stroke="#d9ab4f" stroke-width="2" stroke-dasharray="20 16" opacity=".6"/>
+          <rect x="560" y="0" width="36" height="280" fill="#0d0608"/>
+          <text x="60" y="146" font-family="Unbounded" font-weight="700" font-size="14" fill="#d9ab4f" letter-spacing="3">УЛ. ПУШКИНА</text>
+          <rect x="620" y="24" width="210" height="86" fill="#c8102e"/>
+          <text x="725" y="62" text-anchor="middle" font-family="Unbounded" font-weight="900" font-size="22" fill="#f4e7d3">САКУРА 桜</text>
+          <text x="725" y="88" text-anchor="middle" font-family="Manrope" font-weight="800" font-size="14" fill="#f4e7d3">Пушкина 13, дом 3</text>
+          <circle cx="725" cy="140" r="10" fill="#ff4f8b"><animate attributeName="r" values="8;12;8" dur="1.4s" repeatCount="indefinite"/></circle>
+          <circle cx="725" cy="140" r="10" fill="none" stroke="#ff4f8b" stroke-width="2"><animate attributeName="r" values="10;40" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0" dur="1.8s" repeatCount="indefinite"/></circle>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="logo disp">Сакура<span>.</span></div>
+      <p style="margin-top:16px;color:var(--muted)">ул. Пушкина 13, дом 3 · <a href="tel:+7998174820">+7 998 174 820</a><br>Все сеты — 550 ₽ · первому гостю −20%</p>
+    </div>
+    <div class="credits">
+      <b>Изображения (Wikimedia Commons):</b><br>
+      Гравюры Утагавы Куниёси и «Большая волна в Канагаве» Кацусики Хокусая — общественное достояние.<br>
+      Сакура: indah nur indaheart, Karolien Brughmans (CC0, Unsplash). Тамаки: Benoît Prieur (CC0).<br>
+      Хосомаки: <a href="https://commons.wikimedia.org/wiki/File:Hosomaki-zushi_(sushi).jpg">石焼ビビンバ</a>, CC BY-SA 4.0 ·
+      Футомаки: <a href="https://commons.wikimedia.org/wiki/File:Futomaki_zushi_in_201902.jpg">Mc681</a>, CC BY-SA 4.0 ·
+      Уромаки: <a href="https://commons.wikimedia.org/wiki/File:Uramaki.jpg">Bdieu</a>, CC BY 3.0.
+      Фото сакуры обработано (вырезан фон).
+    </div>
+  </div>
+</footer>
+
+<!-- ================= КОРЗИНА ================= -->
+<button class="cart-btn" id="cartBtn" aria-label="Мой заказ">
+  <svg viewBox="0 0 40 40" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 17h28l-3 15H9Z"/><path d="M11 5l12 11M30 4L19 15"/></svg>
+  <span class="cart-count" id="cartCount">0</span>
+</button>
+<div class="panel hide" id="panel">
+  <h3>Мой заказ</h3>
+  <div id="rows"></div>
+  <label class="check"><input type="checkbox" id="firstChk"> Я здесь впервые (−20%)</label>
+  <div class="total"><span>Итого</span><span id="total">0 ₽</span></div>
+  <a class="btn btn-red" href="tel:+7998174820">Позвонить и заказать</a>
+  <p class="note">Продиктуйте заказ по телефону — приготовим за 5–10 минут.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- лепестки ---------- */
+const cv = $("petals"), ctx = cv.getContext("2d");
+let W, H; const petals = [];
+function resize(){ const d = Math.min(devicePixelRatio||1, 2); W = innerWidth; H = innerHeight; cv.width = W*d; cv.height = H*d; ctx.setTransform(d,0,0,d,0,0); }
+resize(); addEventListener("resize", resize);
+function makePetal(fromTree){
+  const tw = Math.min(780, W*.72);
+  return { x: fromTree ? Math.random()*tw*.8 : Math.random()*W, y: fromTree ? Math.random()*tw*.5 : -20 - Math.random()*H,
+    s: 6 + Math.random()*8, vy: .5 + Math.random()*1.1, vx: .3 + Math.random()*.9, rot: Math.random()*6.28, vr: (Math.random()-.5)*.06,
+    ph: Math.random()*6.28, c: ["#ff9ec0","#ffc2d8","#ff7aa8","#f6d4df"][Math.random()*4|0] };
+}
+for (let i = 0; i < (W < 600 ? 20 : 38); i++) petals.push(makePetal(false));
+function drawPetal(p){
+  ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.scale(1, Math.abs(Math.sin(p.ph))*.6+.4);
+  ctx.shadowColor = "rgba(0,0,0,.5)"; ctx.shadowBlur = 6; ctx.shadowOffsetY = 4;
+  ctx.fillStyle = p.c; ctx.beginPath();
+  ctx.moveTo(0,-p.s); ctx.bezierCurveTo(p.s*.9,-p.s*.6, p.s*.7,p.s*.6, 0,p.s); ctx.bezierCurveTo(-p.s*.7,p.s*.6, -p.s*.9,-p.s*.6, 0,-p.s);
+  ctx.fill(); ctx.restore();
+}
+function tick(){
+  ctx.clearRect(0,0,W,H);
+  for (let i = petals.length-1; i >= 0; i--) {
+    const p = petals[i];
+    p.ph += .03; p.y += p.vy; p.x += p.vx + Math.sin(p.ph)*.8; p.rot += p.vr;
+    if (p.y > H+20 || p.x > W+20) { if (p.burst) petals.splice(i,1); else Object.assign(p, makePetal(false), {y:-20}); continue; }
+    drawPetal(p);
+  }
+  requestAnimationFrame(tick);
+}
+if (!reduce) requestAnimationFrame(tick);
+
+/* ---------- встряхнуть дерево ---------- */
+const tree = $("tree"), shadow = document.querySelector(".tree-shadow");
+function shakeTree(){
+  for (const el of [tree, shadow]) { el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); }
+  for (let i = 0; i < 50; i++) { const p = makePetal(true); p.burst = true; p.vy += Math.random()*1.6; p.vx += Math.random()*1.6; petals.push(p); }
+}
+// дерево не перехватывает клики: трясём его, только если клик пришёлся на непрозрачный пиксель веток
+const alphaCv = document.createElement("canvas"), alphaCtx = alphaCv.getContext("2d", {willReadFrequently:true});
+function treeHit(x, y){
+  const r = tree.getBoundingClientRect();
+  if (!alphaCv.width || x < r.left || y < r.top || x > r.right || y > r.bottom) return false;
+  const px = (x - r.left) / r.width * alphaCv.width | 0, py = (y - r.top) / r.height * alphaCv.height | 0;
+  try { return alphaCtx.getImageData(px, py, 1, 1).data[3] > 70; } catch { return true; }
+}
+function sampleTree(){ alphaCv.width = 350; alphaCv.height = Math.round(350 * tree.naturalHeight / tree.naturalWidth); alphaCtx.drawImage(tree, 0, 0, alphaCv.width, alphaCv.height); }
+tree.complete ? sampleTree() : tree.addEventListener("load", sampleTree);
+document.addEventListener("click", e => {
+  if (e.target.closest("a,button,input,select,textarea,label,canvas,.dish,.omi-box,.panel,nav")) return;
+  if (treeHit(e.clientX, e.clientY)) shakeTree();
+});
+document.addEventListener("mousemove", e => { if (!e.target.closest("a,button,canvas")) cur.classList.toggle("big", treeHit(e.clientX, e.clientY) || !!e.target.closest(".dish,select,label,.omi-box")); });
+tree.addEventListener("animationend", e => { if (e.animationName === "shake") { tree.classList.remove("shake"); shadow.classList.remove("shake"); } });
+
+/* ---------- курсор + параллакс ---------- */
+const cur = $("cursor"), par = document.querySelectorAll("[data-par]");
+const finePointer = matchMedia("(pointer:fine)").matches;
+let lastTrail = 0, lx = 0, ly = 0;
+function fx(cls, text, x, y, life){
+  const s = document.createElement("span"); s.className = cls; s.textContent = text;
+  s.style.setProperty("--x", x + "px"); s.style.setProperty("--y", y + "px");
+  document.body.appendChild(s); setTimeout(() => s.remove(), life);
+}
+addEventListener("mousemove", e => {
+  cur.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
+  if (reduce) return;
+  const now = performance.now();
+  if (finePointer && now - lastTrail > 110 && Math.hypot(e.clientX - lx, e.clientY - ly) > 40) {
+    lastTrail = now; lx = e.clientX; ly = e.clientY;
+    fx("gtrail", "ゴ", e.clientX + 16, e.clientY + 10, 900);
+  }
+  const dx = e.clientX - W/2, dy = e.clientY - H/2;
+  par.forEach(el => { const k = +el.dataset.par; el.style.transform = `translate(${dx*k}px,${dy*k}px)`; });
+});
+addEventListener("mousedown", e => {
+  cur.classList.add("down");
+  if (!reduce && finePointer) fx("gboom", ["ドン!","ゴゴゴ","ドドド","ORA!","バーン!"][Math.random()*5|0], e.clientX, e.clientY, 800);
+});
+addEventListener("mouseup", () => cur.classList.remove("down"));
+document.addEventListener("mouseover", e => cur.classList.toggle("big", !!e.target.closest("a,button,.tree,.omi-box,.dish,select,label")));
+
+/* ---------- стрелка в кнопках ---------- */
+document.querySelectorAll(".btn").forEach(b => { const a = document.createElement("span"); a.className = "arr"; a.textContent = "→"; b.append(a); });
+
+/* ---------- заголовки по буквам ---------- */
+document.querySelectorAll("[data-split]").forEach(h => {
+  let i = 0;
+  const walk = node => [...node.childNodes].forEach(n => {
+    if (n.nodeType === 3) {
+      const frag = document.createDocumentFragment();
+      for (const word of n.textContent.split(/(\s+)/)) {
+        if (/^\s+$/.test(word)) { frag.append(word); continue; }
+        const w = document.createElement("span"); w.style.display = "inline-block"; w.style.overflow = "hidden";
+        for (const c of word) { const s = document.createElement("span"); s.className = "ch"; s.textContent = c; s.style.transitionDelay = (i++ * 0.03) + "s"; w.append(s); }
+        frag.append(w);
+      }
+      n.replaceWith(frag);
+    } else walk(n);
+  });
+  walk(h);
+});
+
+/* ---------- появление ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), {threshold:.12});
+document.querySelectorAll(".reveal,[data-split]").forEach(el => io.observe(el));
+
+/* ---------- корзина ---------- */
+const PRICE = 550, cart = {}, panel = $("panel"), rows = $("rows");
+function render(){
+  const names = Object.keys(cart).filter(n => cart[n] > 0);
+  const count = names.reduce((s,n) => s + cart[n], 0);
+  $("cartCount").textContent = count;
+  rows.innerHTML = names.length ? "" : '<p class="empty">Пока пусто — выберите сет в меню.</p>';
+  for (const n of names) {
+    const r = document.createElement("div"); r.className = "prow";
+    r.innerHTML = `<span><b>${n}</b><br><small>${PRICE} ₽ × ${cart[n]}</small></span><span class="qty"><button aria-label="Меньше">−</button><b>${cart[n]}</b><button aria-label="Больше">+</button></span>`;
+    const [minus, plus] = r.querySelectorAll("button");
+    minus.onclick = () => { cart[n]--; render(); };
+    plus.onclick = () => { cart[n]++; render(); };
+    rows.appendChild(r);
+  }
+  const sum = count * PRICE;
+  $("total").innerHTML = $("firstChk").checked && sum ? `<span><s>${sum} ₽</s>${Math.round(sum*.8)} ₽</span>` : `${sum} ₽`;
+}
+$("firstChk").onchange = render;
+$("cartBtn").onclick = () => panel.classList.toggle("hide");
+document.querySelectorAll(".add").forEach(btn => btn.addEventListener("click", () => {
+  const n = btn.closest(".dish").dataset.name;
+  cart[n] = (cart[n]||0) + 1; render();
+  btn.firstChild.nodeValue = "Добавлено ✓ "; btn.classList.add("done");
+  setTimeout(() => { btn.firstChild.nodeValue = "В заказ +"; btn.classList.remove("done"); }, 1200);
+  const cb = $("cartBtn"); cb.classList.remove("bump"); void cb.offsetWidth; cb.classList.add("bump");
+}));
+render();
+
+/* ---------- омикудзи ---------- */
+const fortunes = [
+  ["大吉","Великая удача","Путь футомаки открыт. Берите самый большой ролл — день будет щедрым."],
+  ["中吉","Средняя удача","Хосомаки принесут ясность ума. Простота — оружие мастера."],
+  ["小吉","Малая удача","Уромаки наизнанку вывернут неудачи в вашу пользу."],
+  ["吉","Удача","Тамаки в руке — удача в кармане. Ешьте, пока нори хрустит."],
+  ["末吉","Удача впереди","Ваше счастье придёт через 5–10 минут. Ровно столько готовится сет."],
+  ["大吉","Великая удача","Закажите все четыре сета и угостите друзей — союз станет нерушимым."],
+  ["中吉","Средняя удача","Если вы у нас впервые — скидка 20% уже ждёт. Это судьба."]
+];
+let lastF = -1;
+function draw(){
+  const box = $("omiBox"), sc = $("omiScroll");
+  box.classList.remove("shake"); void box.getBBox(); box.classList.add("shake");
+  sc.classList.add("hide");
+  setTimeout(() => {
+    let i; do { i = Math.random()*fortunes.length|0; } while (i === lastF); lastF = i;
+    const [k, r, t] = fortunes[i];
+    $("omiRank").innerHTML = `${k}<span>${r}</span>`; $("omiText").textContent = t;
+    sc.classList.remove("hide"); box.classList.remove("shake");
+  }, 750);
+}
+$("omiBtn").onclick = draw; $("omiBox").onclick = draw;
+$("omiBox").onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); draw(); } };
+
+/* ---------- бронь: данные ---------- */
+const TABLES = [
+  {id:1, seats:2, shape:"round", x:-8.5, z:-4},
+  {id:2, seats:2, shape:"round", x:-8.5, z:1.5},
+  {id:3, seats:4, shape:"square", x:-4, z:-4},
+  {id:4, seats:4, shape:"square", x:-4, z:1.5},
+  {id:5, seats:4, shape:"square", x:0.5, z:-4},
+  {id:6, seats:4, shape:"square", x:0.5, z:1.5},
+  {id:7, seats:6, shape:"long", x:5.5, z:-1.2}
+];
+const placeName = t => t.shape === "round" ? "у окна, на двоих" : t.shape === "long" ? "большой стол для компании" : "в центре зала";
+const STORE = "sakura-bookings";
+function loadBookings(){ try { return JSON.parse(localStorage.getItem(STORE)) || []; } catch { return []; } }
+function saveBookings(list){ try { localStorage.setItem(STORE, JSON.stringify(list)); } catch {} }
+const toMin = t => { const [h, m] = (t || "0:0").split(":").map(Number); return h*60 + m; };
+function busySet(){
+  const d = $("fDate").value, t = toMin($("fTime").value);
+  return new Set(loadBookings().filter(b => b.date === d && Math.abs(toMin(b.time) - t) < 120).map(b => b.table));
+}
+
+let selected = null, hall3d = null;
+const fTable = $("fTable"), fGuests = $("fGuests"), fDate = $("fDate");
+fTable.innerHTML = '<option value="">— выберите —</option>' + TABLES.map(t => `<option value="${t.id}">Столик №${t.id} · ${t.seats} места · ${placeName(t)}</option>`).join("");
+const today = new Date(); today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+fDate.min = fDate.value = today.toISOString().slice(0,10);
+
+function selectTable(id){
+  const t = TABLES.find(t => t.id === id) || null;
+  selected = t; fTable.value = t ? t.id : "";
+  $("selN").textContent = t ? "№" + t.id : "—";
+  $("selT").textContent = t ? `Столик №${t.id} · ${t.seats} ${t.seats < 5 ? "места" : "мест"}` : "Столик не выбран";
+  $("selD").textContent = t ? placeName(t)[0].toUpperCase() + placeName(t).slice(1) + "." : "Нажмите на столик в 3D-зале или выберите его ниже.";
+  const max = t ? t.seats : 6, cur = +fGuests.value || 2;
+  fGuests.innerHTML = Array.from({length:max}, (_, i) => `<option${i+1 === Math.min(cur, max) ? " selected" : ""}>${i+1}</option>`).join("");
+  $("bmsg").textContent = t && busySet().has(t.id) ? "Этот столик уже забронирован на выбранное время — выберите другой или другое время." : "";
+  hall3d && hall3d.refresh();
+}
+fTable.onchange = () => selectTable(+fTable.value);
+[fDate, $("fTime")].forEach(el => el.addEventListener("change", () => selectTable(selected && selected.id)));
+selectTable(null);
+
+$("bform").addEventListener("submit", e => {
+  e.preventDefault();
+  const msg = $("bmsg"), name = $("fName").value.trim(), phone = $("fPhone").value.trim();
+  if (!selected) return msg.textContent = "Сначала выберите столик.";
+  if (!fDate.value || !$("fTime").value) return msg.textContent = "Укажите дату и время.";
+  if (!name) return msg.textContent = "Укажите имя.";
+  if (phone.replace(/\D/g, "").length < 10) return msg.textContent = "Проверьте номер телефона.";
+  if (busySet().has(selected.id)) return msg.textContent = "Этот столик уже занят на это время.";
+  const b = {table:selected.id, date:fDate.value, time:$("fTime").value, guests:+fGuests.value, name, phone};
+  const list = loadBookings(); list.push(b); saveBookings(list);
+  const dateRu = new Date(b.date + "T00:00").toLocaleDateString("ru-RU", {day:"numeric", month:"long", weekday:"long"});
+  $("ticketText").innerHTML = `Столик <b style="display:inline;font-size:inherit">№${b.table}</b> · ${b.guests} гост.<br>${dateRu}, ${b.time}<br>На имя: ${name.replace(/[<>&]/g, "")}`;
+  $("bdone").classList.add("show"); msg.textContent = "";
+  hall3d && hall3d.refresh(true);
+  fx("gboom", "予約!", innerWidth/2, innerHeight/2, 800);
+});
+
+/* ---------- бронь: 3D-зал (three.js) ---------- */
+(function initHall(){
+  const hall = $("hall");
+  if (!window.THREE) { hall.insertAdjacentHTML("beforeend", '<div class="fallback">3D-зал не загрузился (нет интернета?). Выберите столик в списке справа.</div>'); return; }
+  const T = THREE;
+  const renderer = new T.WebGLRenderer({antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
+  renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.25;
+  hall.prepend(renderer.domElement);
+  const scene = new T.Scene();
+  scene.fog = new T.Fog(0x120709, 26, 48);
+  const camera = new T.PerspectiveCamera(42, 1, 0.1, 100);
+
+  // текстуры, нарисованные на canvas
+  function canvasTex(w, h, paint){ const c = document.createElement("canvas"); c.width = w; c.height = h; paint(c.getContext("2d"), w, h); const t = new T.CanvasTexture(c); t.anisotropy = 4; return t; }
+  const tatami = canvasTex(1024, 683, (g, w, h) => {
+    g.fillStyle = "#1a0f08"; g.fillRect(0, 0, w, h);
+    const cw = w/6, ch = h/2;
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 6; c++) {
+      const vertical = (r + c) % 2 === 0, x = c*cw, y = r*ch/2;
+      const mw = vertical ? cw : cw, mh = ch/2;
+      g.fillStyle = vertical ? "#7d7246" : "#867a4c"; g.fillRect(x+4, y+4, mw-8, mh-8);
+      g.strokeStyle = "rgba(40,30,10,.25)"; g.lineWidth = 1;
+      for (let k = 0; k < (vertical ? mw : mh); k += 5) { g.beginPath(); vertical ? (g.moveTo(x+k, y+4), g.lineTo(x+k, y+mh-4)) : (g.moveTo(x+4, y+k), g.lineTo(x+mw-4, y+k)); g.stroke(); }
+      g.fillStyle = "#2b1b10"; g.fillRect(x+4, y+4, mw-8, 6); g.fillRect(x+4, y+mh-10, mw-8, 6);
+    }
+  });
+  const shoji = canvasTex(1024, 256, (g, w, h) => {
+    g.fillStyle = "#f6dcae"; g.fillRect(0, 0, w, h);
+    const grd = g.createLinearGradient(0, 0, 0, h); grd.addColorStop(0, "rgba(255,180,120,.0)"); grd.addColorStop(1, "rgba(255,120,90,.35)");
+    g.fillStyle = grd; g.fillRect(0, 0, w, h);
+    g.strokeStyle = "#2a160c"; g.lineWidth = 6;
+    for (let x = 0; x <= w; x += 64) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
+    for (let y = 0; y <= h; y += 64) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+    g.lineWidth = 16; g.strokeRect(0, 0, w, h);
+    for (let x = 0; x <= w; x += 256) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
+  });
+
+  // пол и стены
+  const floor = new T.Mesh(new T.PlaneGeometry(26, 18), new T.MeshStandardMaterial({map:tatami, roughness:.95}));
+  floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
+  const wallMat = new T.MeshStandardMaterial({map:shoji, emissive:0xffb070, emissiveMap:shoji, emissiveIntensity:.55, roughness:.8});
+  const back = new T.Mesh(new T.PlaneGeometry(26, 5), wallMat); back.position.set(0, 2.5, -9); back.receiveShadow = true; scene.add(back);
+  const left = new T.Mesh(new T.PlaneGeometry(18, 5), wallMat); left.position.set(-13, 2.5, 0); left.rotation.y = Math.PI/2; left.receiveShadow = true; scene.add(left);
+  const beamMat = new T.MeshStandardMaterial({color:0x1d0e08, roughness:.7});
+  [[0, 5, -9, 26.4, .4, .4], [-13, 5, 0, .4, .4, 18.4], [-13, 2.5, -9, .45, 5, .45]].forEach(([x, y, z, w, h, d]) => { const m = new T.Mesh(new T.BoxGeometry(w, h, d), beamMat); m.position.set(x, y, z); m.castShadow = true; scene.add(m); });
+
+  // суши-стойка справа
+  const counter = new T.Group();
+  const cBody = new T.Mesh(new T.BoxGeometry(1.4, 1.1, 10), new T.MeshStandardMaterial({color:0x7d0a1f, roughness:.6}));
+  cBody.position.y = .55; const cTop = new T.Mesh(new T.BoxGeometry(1.8, .12, 10.4), new T.MeshStandardMaterial({color:0xc89a5c, roughness:.45}));
+  cTop.position.y = 1.16; counter.add(cBody, cTop);
+  for (let i = 0; i < 6; i++) { const p = new T.Mesh(new T.CylinderGeometry(.28, .22, .06, 20), new T.MeshStandardMaterial({color:0xf4f0e8})); p.position.set(0, 1.25, -4 + i*1.6); counter.add(p);
+    const s = new T.Mesh(new T.BoxGeometry(.3, .1, .14), new T.MeshStandardMaterial({color:0xff7a4d, roughness:.4})); s.position.set(0, 1.32, -4 + i*1.6); counter.add(s); }
+  counter.position.set(10.6, 0, -2.5); counter.traverse(o => { if (o.isMesh) { o.castShadow = o.receiveShadow = true; } }); scene.add(counter);
+
+  // сакура в углу
+  const tree = new T.Group();
+  const trunk = new T.Mesh(new T.CylinderGeometry(.18, .35, 3.4, 8), new T.MeshStandardMaterial({color:0x3a2216})); trunk.position.y = 1.7; tree.add(trunk);
+  const blossom = new T.MeshStandardMaterial({color:0xff9ec0, roughness:.8, flatShading:true, emissive:0x40101e});
+  [[0,3.6,0,1.3],[.9,3.2,.4,1],[-.8,3.3,-.3,1.05],[.2,4.2,-.5,.9],[-.4,3.9,.7,.85]].forEach(([x, y, z, r]) => { const b = new T.Mesh(new T.IcosahedronGeometry(r, 1), blossom); b.position.set(x, y, z); tree.add(b); });
+  tree.position.set(-11.2, 0, -7.2); tree.traverse(o => { if (o.isMesh) { o.castShadow = true; } }); scene.add(tree);
+
+  // фонари
+  const lanternMat = new T.MeshStandardMaterial({color:0xc8102e, emissive:0xff2a40, emissiveIntensity:1.2, roughness:.5});
+  [[-6.2,-1.2],[-1.8,-1.2],[2.8,-1.2],[7,-5]].forEach(([x, z]) => {
+    const l = new T.Mesh(new T.SphereGeometry(.42, 20, 14), lanternMat); l.scale.y = 1.3; l.position.set(x, 4.2, z); scene.add(l);
+    const cord = new T.Mesh(new T.CylinderGeometry(.015, .015, 1.4), beamMat); cord.position.set(x, 5.3, z); scene.add(cord);
+  });
+
+  // свет
+  scene.add(new T.HemisphereLight(0xffd9c2, 0x2a0f16, .55));
+  const sun = new T.DirectionalLight(0xffe2c4, 1.25); sun.position.set(9, 16, 10); sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, {left:-16, right:16, top:14, bottom:-14, near:1, far:50}); sun.shadow.bias = -.0005; sun.shadow.radius = 4;
+  scene.add(sun);
+  const red1 = new T.PointLight(0xff3050, 1.1, 14, 2); red1.position.set(-4, 3.8, -1.2); scene.add(red1);
+  const red2 = new T.PointLight(0xff3050, .9, 14, 2); red2.position.set(4.5, 3.8, -2); scene.add(red2);
+
+  // столики
+  const woodBase = new T.MeshStandardMaterial({color:0x5a3826, roughness:.55});
+  const cushionMat = new T.MeshStandardMaterial({color:0x9c0f2a, roughness:.9});
+  const plateMat = new T.MeshStandardMaterial({color:0xf3eee6, roughness:.35});
+  const pickables = [];
+  const objs = TABLES.map(t => {
+    const g = new T.Group(); g.position.set(t.x, 0, t.z); g.userData.id = t.id;
+    const top = new T.MeshStandardMaterial({color:0x6b4a33, roughness:.4, metalness:.05, emissive:0x000000});
+    let topMesh, seatPos = [];
+    if (t.shape === "round") {
+      topMesh = new T.Mesh(new T.CylinderGeometry(.95, .95, .14, 40), top);
+      const leg = new T.Mesh(new T.CylinderGeometry(.14, .3, .5, 16), woodBase); leg.position.y = .25; g.add(leg);
+      seatPos = [[0, 1.45], [0, -1.45]];
+    } else {
+      const w = t.shape === "long" ? 1.8 : 2, d = t.shape === "long" ? 4.4 : 2;
+      topMesh = new T.Mesh(new T.BoxGeometry(w, .14, d), top);
+      [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx, sz]) => { const leg = new T.Mesh(new T.BoxGeometry(.14, .5, .14), woodBase); leg.position.set(sx*(w/2-.2), .25, sz*(d/2-.2)); g.add(leg); });
+      seatPos = t.shape === "long" ? [-1.4, 0, 1.4].flatMap(z => [[-1.55, z], [1.55, z]]) : [[0, -1.5], [0, 1.5], [-1.5, 0], [1.5, 0]];
+    }
+    topMesh.position.y = .57; g.add(topMesh);
+    seatPos.forEach(([sx, sz]) => {
+      const c = new T.Mesh(new T.BoxGeometry(.85, .14, .85), cushionMat); c.position.set(sx, .07, sz); g.add(c);
+      const p = new T.Mesh(new T.CylinderGeometry(.22, .18, .04, 20), plateMat); p.position.set(sx*.45, .66, sz*.45); g.add(p);
+    });
+    const ring = new T.Mesh(new T.RingGeometry(t.shape === "long" ? 3 : 2.1, t.shape === "long" ? 3.2 : 2.3, 48), new T.MeshBasicMaterial({color:0xd9ab4f, transparent:true, opacity:0, side:T.DoubleSide}));
+    ring.rotation.x = -Math.PI/2; ring.position.y = .03; g.add(ring);
+    g.traverse(o => { if (o.isMesh && o !== ring) { o.castShadow = o.receiveShadow = true; } });
+    // невидимая «зона нажатия» вокруг стола и подушек — по столику легко попасть
+    const hit = new T.Mesh(t.shape === "long" ? new T.BoxGeometry(4.2, 1.8, 5.6) : new T.CylinderGeometry(t.shape === "round" ? 1.7 : 2.1, t.shape === "round" ? 1.7 : 2.1, 1.8, 16), new T.MeshBasicMaterial({visible:false}));
+    hit.position.y = .9; hit.userData.id = t.id; g.add(hit); pickables.push(hit);
+    scene.add(g);
+    const label = document.createElement("div"); label.className = "tlabel"; label.innerHTML = `<b>№${t.id}</b> · ${t.seats} ${t.seats < 5 ? "места" : "мест"}`; hall.appendChild(label);
+    return {t, g, top, ring, label};
+  });
+
+  // камера-орбита
+  let theta = .55, phi = .92, radius = 24, auto = true, hovered = null, visible = false, boom = 0;
+  function placeCam(){ camera.position.set(radius*Math.sin(phi)*Math.sin(theta), radius*Math.cos(phi), radius*Math.sin(phi)*Math.cos(theta)); camera.lookAt(0, 0, -1); }
+  function resize(){ const w = hall.clientWidth, h = hall.clientHeight; renderer.setSize(w, h, false); camera.aspect = w/h; radius = w < 600 ? 31 : 24; camera.updateProjectionMatrix(); }
+  new ResizeObserver(resize).observe(hall); resize();
+
+  const ray = new T.Raycaster(), ndc = new T.Vector2();
+  function pick(e){ const r = renderer.domElement.getBoundingClientRect(); ndc.set((e.clientX - r.left)/r.width*2 - 1, -(e.clientY - r.top)/r.height*2 + 1); ray.setFromCamera(ndc, camera); const hit = ray.intersectObjects(pickables)[0]; return hit ? hit.object.userData.id : null; }
+  let down = null;
+  const el = renderer.domElement;
+  el.addEventListener("pointerdown", e => { down = {x:e.clientX, y:e.clientY, th:theta, ph:phi, moved:false}; auto = false; });
+  addEventListener("pointermove", e => {
+    if (down) {
+      const dx = e.clientX - down.x, dy = e.clientY - down.y;
+      if (Math.abs(dx) + Math.abs(dy) > 5) down.moved = true;
+      theta = down.th - dx*.006; if (e.pointerType === "mouse") phi = Math.min(1.25, Math.max(.45, down.ph - dy*.004));
+    } else if (e.target === el) {
+      hovered = pick(e); cur.classList.toggle("big", !!hovered);
+    }
+  });
+  addEventListener("pointerup", e => {
+    if (down && !down.moved && e.target === el) { const id = pick(e); if (id) { selectTable(id); boom = 1; } }
+    down = null;
+  });
+  let over = false;
+  el.addEventListener("pointerenter", () => { over = true; });
+  el.addEventListener("pointerleave", () => { hovered = null; over = false; });
+
+  const v = new T.Vector3();
+  function paint(){
+    const busy = busySet();
+    objs.forEach(o => {
+      const isSel = selected && selected.id === o.t.id, isBusy = busy.has(o.t.id), isHov = hovered === o.t.id;
+      o.top.color.setHex(isBusy ? 0x8a0d24 : isSel ? 0xd9ab4f : 0x6b4a33);
+      o.top.emissive.setHex(isSel ? 0x4a3008 : isHov ? 0x3a1a10 : isBusy ? 0x300008 : 0);
+      o.ring.material.opacity = isSel ? .9 : isHov ? .35 : 0;
+      o.label.className = "tlabel" + (isBusy ? " busy" : isSel ? " sel" : "");
+      o.label.lastChild.textContent = isBusy ? " · занят" : ` · ${o.t.seats} ${o.t.seats < 5 ? "места" : "мест"}`;
+    });
+  }
+  hall3d = {refresh(){ paint(); }};
+
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; }, {rootMargin:"100px"}).observe(hall);
+  const clock = new T.Clock();
+  (function loop(){
+    requestAnimationFrame(loop);
+    if (!visible) return;
+    const dt = clock.getDelta(), time = clock.elapsedTime;
+    if (auto && !over && !reduce) theta += dt*.08;
+    placeCam(); paint();
+    objs.forEach(o => {
+      const isSel = selected && selected.id === o.t.id;
+      const s = isSel ? 1 + Math.sin(time*4)*.04 + boom*.25 : 1; o.ring.scale.set(s, s, s);
+      o.g.position.y = isSel ? .04 + Math.sin(time*3)*.03 : 0;
+      v.set(o.t.x, 1.3, o.t.z).project(camera);
+      o.label.style.transform = `translate(${(v.x*.5+.5)*hall.clientWidth}px,${(-v.y*.5+.5)*hall.clientHeight}px) translate(-50%,-100%)`;
+      o.label.style.opacity = v.z < 1 ? 1 : 0;
+    });
+    boom = Math.max(0, boom - dt*2.5);
+    renderer.render(scene, camera);
+  })();
+})();
+</script>
+</body>
+</html>
